@@ -475,7 +475,7 @@ void Partition::seth_Vp_trans(AFDP3D Pa)
 
     if(!this->in_islastblock_y())
     {
-        if(this->indexmin_y < Pa.PMLy + Pa.Ny && this->indexmax_y >= Pa.PMLy + Pa.Ny - 1)
+        if(this->indexmin_y < Pa.PMLy + Pa.Ny && this->indexmax_y >= Pa.PMLy + Pa.Ny - 1)//to front
         {
             this->trans_h_Vp.push_back(1);
         }
@@ -491,7 +491,7 @@ void Partition::seth_Vp_trans(AFDP3D Pa)
 
     if(!this->in_isfirstblock_y())
     {
-        if(this->indexmin_y <= Pa.PMLy && this->indexmax_y >= Pa.PMLy)
+        if(this->indexmin_y <= Pa.PMLy && this->indexmax_y >= Pa.PMLy)//to back
         {
             this->trans_h_Vp.push_back(1);
         }
@@ -513,94 +513,235 @@ void Partition::seth_Vp_border(AFDP3D Pa)
 {
     if(this->indexmax_x < Pa.PMLx)
     {
+        this->h_Vp.leftborder = 0;
+        this->h_Vp.rightborder = 1;
+
         if(this->indexmax_z < Pa.PMLz)
         {
             this->h_Vp.topborder = 0;
-            this->h_Vp.leftborder = 0;
             this->h_Vp.bottomborder = 1;
-            this->h_Vp.rightborder = 1;
+
+            if(this->indexmax_y < Pa.PMLy)
+            {
+                this->h_Vp.backborder = 0;
+                this->h_Vp.frontborder = 1;
+            }
+            else if(this->indexmin_y >= Pa.PMLy + Pa.Ny)
+            {
+                this->h_Vp.backborder = 1;
+                this->h_Vp.frontborder = 0;
+            }
+            else
+            {
+                this->h_Vp.backborder = 0;
+                this->h_Vp.frontborder = 0;
+            }
         }
         else if(this->indexmin_z >= Pa.PMLz + Pa.Nz)
         {
             this->h_Vp.topborder = 1;
-            this->h_Vp.leftborder = 0;
             this->h_Vp.bottomborder = 0;
-            this->h_Vp.rightborder = 1;
+
+            if(this->indexmax_y < Pa.PMLy)
+            {
+                this->h_Vp.backborder = 0;
+                this->h_Vp.frontborder = 1;
+            }
+            else if(this->indexmin_y >= Pa.PMLy + Pa.Ny)
+            {
+                this->h_Vp.backborder = 1;
+                this->h_Vp.frontborder = 0;
+            }
+            else
+            {
+                this->h_Vp.backborder = 0;
+                this->h_Vp.frontborder = 0;
+            }
         }
         else
         {
             this->h_Vp.topborder = 0;
-            this->h_Vp.leftborder = 0;
             this->h_Vp.bottomborder = 0;
-            this->h_Vp.rightborder = 1;
+
+            if(this->indexmax_y < Pa.PMLy)
+            {
+                this->h_Vp.backborder = 0;
+                this->h_Vp.frontborder = 1;
+            }
+            else if(this->indexmin_y >= Pa.PMLy + Pa.Ny)
+            {
+                this->h_Vp.backborder = 1;
+                this->h_Vp.frontborder = 0;
+            }
+            else
+            {
+                this->h_Vp.backborder = 0;
+                this->h_Vp.frontborder = 0;
+            }
         }
     }
     else if(this->indexmin_x >= Pa.PMLx + Pa.Nx)
     {
+        this->h_Vp.leftborder = 1;
+        this->h_Vp.rightborder = 0;
+
         if(this->indexmax_z < Pa.PMLz)
         {
             this->h_Vp.topborder = 0;
-            this->h_Vp.leftborder = 1;
             this->h_Vp.bottomborder = 1;
-            this->h_Vp.rightborder = 0;
+
+            if(this->indexmax_y < Pa.PMLy)
+            {
+                this->h_Vp.backborder = 0;
+                this->h_Vp.frontborder = 1;
+            }
+            else if(this->indexmin_y >= Pa.PMLy + Pa.Ny)
+            {
+                this->h_Vp.backborder = 1;
+                this->h_Vp.frontborder = 0;
+            }
+            else
+            {
+                this->h_Vp.backborder = 0;
+                this->h_Vp.frontborder = 0;
+            }
         }
         else if(this->indexmin_z >= Pa.PMLz + Pa.Nz)
         {
             this->h_Vp.topborder = 1;
-            this->h_Vp.leftborder = 1;
             this->h_Vp.bottomborder = 0;
-            this->h_Vp.rightborder = 0;
+
+            if(this->indexmax_y < Pa.PMLy)
+            {
+                this->h_Vp.backborder = 0;
+                this->h_Vp.frontborder = 1;
+            }
+            else if(this->indexmin_y >= Pa.PMLy + Pa.Ny)
+            {
+                this->h_Vp.backborder = 1;
+                this->h_Vp.frontborder = 0;
+            }
+            else
+            {
+                this->h_Vp.backborder = 0;
+                this->h_Vp.frontborder = 0;
+            }
         }
         else
         {
             this->h_Vp.topborder = 0;
-            this->h_Vp.leftborder = 1;
             this->h_Vp.bottomborder = 0;
-            this->h_Vp.rightborder = 0;
+
+            if(this->indexmax_y < Pa.PMLy)
+            {
+                this->h_Vp.backborder = 0;
+                this->h_Vp.frontborder = 1;
+            }
+            else if(this->indexmin_y >= Pa.PMLy + Pa.Ny)
+            {
+                this->h_Vp.backborder = 1;
+                this->h_Vp.frontborder = 0;
+            }
+            else
+            {
+                this->h_Vp.backborder = 0;
+                this->h_Vp.frontborder = 0;
+            }
         }
     }
     else
     {
+        this->h_Vp.leftborder = 0;
+        this->h_Vp.rightborder = 0;
+
         if(this->indexmax_z < Pa.PMLz)
         {
             this->h_Vp.topborder = 0;
-            this->h_Vp.leftborder = 0;
             this->h_Vp.bottomborder = 1;
-            this->h_Vp.rightborder = 0;
+
+            if(this->indexmax_y < Pa.PMLy)
+            {
+                this->h_Vp.backborder = 0;
+                this->h_Vp.frontborder = 1;
+            }
+            else if(this->indexmin_y >= Pa.PMLy + Pa.Ny)
+            {
+                this->h_Vp.backborder = 1;
+                this->h_Vp.frontborder = 0;
+            }
+            else
+            {
+                this->h_Vp.backborder = 0;
+                this->h_Vp.frontborder = 0;
+            }
         }
         else if(this->indexmin_z >= Pa.PMLz + Pa.Nz)
         {
             this->h_Vp.topborder = 1;
-            this->h_Vp.leftborder = 0;
             this->h_Vp.bottomborder = 0;
-            this->h_Vp.rightborder = 0;
+
+            if(this->indexmax_y < Pa.PMLy)
+            {
+                this->h_Vp.backborder = 0;
+                this->h_Vp.frontborder = 1;
+            }
+            else if(this->indexmin_y >= Pa.PMLy + Pa.Ny)
+            {
+                this->h_Vp.backborder = 1;
+                this->h_Vp.frontborder = 0;
+            }
+            else
+            {
+                this->h_Vp.backborder = 0;
+                this->h_Vp.frontborder = 0;
+            }
         }
         else
         {
             this->h_Vp.topborder = 0;
-            this->h_Vp.leftborder = 0;
             this->h_Vp.bottomborder = 0;
-            this->h_Vp.rightborder = 0;
+
+            if(this->indexmax_y < Pa.PMLy)
+            {
+                this->h_Vp.backborder = 0;
+                this->h_Vp.frontborder = 1;
+            }
+            else if(this->indexmin_y >= Pa.PMLy + Pa.Ny)
+            {
+                this->h_Vp.backborder = 1;
+                this->h_Vp.frontborder = 0;
+            }
+            else
+            {
+                this->h_Vp.backborder = 0;
+                this->h_Vp.frontborder = 0;
+            }
         }
     }
     this->h_Vp.length_x = this->h_Vp.leftborder + this->blockLength_x + this->h_Vp.rightborder;
+    this->h_Vp.length_y = this->h_Vp.backborder + this->blockLength_y + this->h_Vp.frontborder;
     this->h_Vp.length_z = this->h_Vp.topborder + this->blockLength_z + this->h_Vp.bottomborder;
 }
 void Partition::setInside(AFDP3D Pa)
 {//cout << rank << endl;
 //    if(rank == 6)
 //        cout << indexmin_x << " " << indexmax_x << " " << indexmin_z << " " << indexmax_z << endl;
-    if(indexmin_x >= Pa.Nx + Pa.PMLx || indexmax_x < Pa.PMLx || indexmin_z >= Pa.Nz + Pa.PMLz || indexmax_z < Pa.PMLz)
+    if(indexmin_x >= Pa.Nx + Pa.PMLx || indexmax_x < Pa.PMLx || indexmin_y >= Pa.Ny + Pa.PMLy || indexmax_y < Pa.PMLy || indexmin_z >= Pa.Nz + Pa.PMLz || indexmax_z < Pa.PMLz)
     {
         this->iscoverbyNPML = true;
         this->inside_num = 1;
         Inside *ins = new Inside[this->inside_num];
         this->inside = ins;
+
         ins->indexmin_x = this->indexmin_x;
         ins->indexmax_x = this->indexmax_x;
+        ins->indexmin_y = this->indexmin_y;
+        ins->indexmax_y = this->indexmax_y;
         ins->indexmin_z = this->indexmin_z;
         ins->indexmax_z = this->indexmax_z;
+
         ins->length_x = ins->indexmax_x - ins->indexmin_x;
+        ins->length_y = ins->indexmax_y - ins->indexmin_y;
         ins->length_z = ins->indexmax_z - ins->indexmin_z;
     }
     else
@@ -614,6 +755,61 @@ void Partition::setInside(AFDP3D Pa)
                 {
                     if(indexmax_z < Pa.PMLz + Pa.Nz)
                     {
+                        if(indexmin_y < Pa.PMLy)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+                                this->inside_num = 3;
+                                Inside *ins = new Inside[this->inside_num];
+
+                                ins[0].indexmin_x = this->indexmin_x;
+                                ins[0].indexmin_y = this->indexmin_y;
+                                ins[0].indexmin_z = this->indexmin_z;
+                                ins[0].indexmax_x = Pa.PMLx - 1;
+                                ins[0].indexmax_y = this->indexmax_y;
+                                ins[0].indexmax_z = this->indexmax_z;
+
+                                ins[0].indexmin_x = this->indexmin_x;
+                                ins[0].indexmin_y = this->indexmin_y;
+                                ins[0].indexmin_z = this->indexmin_z;
+                                ins[0].indexmax_x = this->indexmax_x;
+                                ins[0].indexmax_y = Pa.PMLy - 1;
+                                ins[0].indexmax_z = this->indexmax_z;
+
+                                ins[1].indexmin_x = Pa.PMLx;
+                                ins[1].indexmin_z = this->indexmin_z;
+                                ins[1].indexmax_x = this->indexmax_x;
+                                ins[1].indexmax_z = Pa.PMLz - 1;
+
+                                for(int i = 0; i < this->inside_num; ++i)
+                                {
+                                    ins[i].length_x = ins[i].getindexmax_x() - ins[i].getindexmin_x() + 1;
+                                    ins[i].length_y = ins[i].getindexmax_y() - ins[i].getindexmin_y() + 1;
+                                    ins[i].length_z = ins[i].getindexmax_z() - ins[i].getindexmin_z() + 1;
+                                }
+
+                                this->inside = ins;
+                            }
+                            else
+                            {
+                                this->inside_num = 4;
+                            }
+                        }
+                        else if(indexmin_y >= Pa.PMLy && indexmin_y < Pa.PMLy + Pa.Ny)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else
+                        {
+
+                        }
                         this->inside_num = 2;
                         Inside *ins = new Inside[this->inside_num];
                         ins[0].indexmin_x = this->indexmin_x;
@@ -635,6 +831,32 @@ void Partition::setInside(AFDP3D Pa)
                     }
                     else
                     {
+                        if(indexmin_y < Pa.PMLy)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else if(indexmin_y >= Pa.PMLy && indexmin_y < Pa.PMLy + Pa.Ny)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else
+                        {
+
+                        }
                         this->inside_num = 3;
                         Inside *ins = new Inside[this->inside_num];
                         ins[0].indexmin_x = this->indexmin_x;
@@ -666,6 +888,32 @@ void Partition::setInside(AFDP3D Pa)
                 {
                     if(indexmax_z < Pa.PMLz + Pa.Nz)
                     {
+                        if(indexmin_y < Pa.PMLy)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else if(indexmin_y >= Pa.PMLy && indexmin_y < Pa.PMLy + Pa.Ny)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else
+                        {
+
+                        }
                         this->inside_num = 1;
                         Inside *ins = new Inside[this->inside_num];
                         ins[0].indexmin_x = this->indexmin_x;
@@ -680,6 +928,32 @@ void Partition::setInside(AFDP3D Pa)
                     }
                     else
                     {
+                        if(indexmin_y < Pa.PMLy)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else if(indexmin_y >= Pa.PMLy && indexmin_y < Pa.PMLy + Pa.Ny)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else
+                        {
+
+                        }
                         this->inside_num = 2;
                         Inside *ins = new Inside[this->inside_num];
                         ins[0].indexmin_x = this->indexmin_x;
@@ -711,6 +985,32 @@ void Partition::setInside(AFDP3D Pa)
                 {
                     if(indexmax_z < Pa.PMLz + Pa.Nz)
                     {
+                        if(indexmin_y < Pa.PMLy)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else if(indexmin_y >= Pa.PMLy && indexmin_y < Pa.PMLy + Pa.Ny)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else
+                        {
+
+                        }
                         this->inside_num = 3;
                         Inside *ins = new Inside[this->inside_num];
                         ins[0].indexmin_x = this->indexmin_x;
@@ -738,6 +1038,32 @@ void Partition::setInside(AFDP3D Pa)
                     }
                     else
                     {
+                        if(indexmin_y < Pa.PMLy)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else if(indexmin_y >= Pa.PMLy && indexmin_y < Pa.PMLy + Pa.Ny)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else
+                        {
+
+                        }
                         this->inside_num = 4;
                         Inside *ins = new Inside[this->inside_num];
                         ins[0].indexmin_x = this->indexmin_x;
@@ -776,6 +1102,32 @@ void Partition::setInside(AFDP3D Pa)
                 {
                     if(indexmax_z < Pa.PMLz + Pa.Nz)
                     {
+                        if(indexmin_y < Pa.PMLy)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else if(indexmin_y >= Pa.PMLy && indexmin_y < Pa.PMLy + Pa.Ny)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else
+                        {
+
+                        }
                         this->inside_num = 2;
                         Inside *ins = new Inside[this->inside_num];
                         ins[0].indexmin_x = this->indexmin_x;
@@ -797,6 +1149,32 @@ void Partition::setInside(AFDP3D Pa)
                     }
                     else
                     {
+                        if(indexmin_y < Pa.PMLy)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else if(indexmin_y >= Pa.PMLy && indexmin_y < Pa.PMLy + Pa.Ny)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else
+                        {
+
+                        }
                         this->inside_num = 3;
                         Inside *ins = new Inside[this->inside_num];
                         ins[0].indexmin_x = this->indexmin_x;
@@ -842,6 +1220,32 @@ void Partition::setInside(AFDP3D Pa)
                 {
                     if(indexmax_z < Pa.PMLz + Pa.Nz)
                     {
+                        if(indexmin_y < Pa.PMLy)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else if(indexmin_y >= Pa.PMLy && indexmin_y < Pa.PMLy + Pa.Ny)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else
+                        {
+
+                        }
                         this->inside_num = 1;
                         Inside *ins = new Inside[this->inside_num];
                         ins[0].indexmin_x = this->indexmin_x;
@@ -855,6 +1259,32 @@ void Partition::setInside(AFDP3D Pa)
                     }
                     else
                     {
+                        if(indexmin_y < Pa.PMLy)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else if(indexmin_y >= Pa.PMLy && indexmin_y < Pa.PMLy + Pa.Ny)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else
+                        {
+
+                        }
                         this->inside_num = 2;
                         Inside *ins = new Inside[this->inside_num];
                         ins[0].indexmin_x = this->indexmin_x;
@@ -878,11 +1308,63 @@ void Partition::setInside(AFDP3D Pa)
                 {
                     if(indexmax_z < Pa.PMLz + Pa.Nz)
                     {
+                        if(indexmin_y < Pa.PMLy)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else if(indexmin_y >= Pa.PMLy && indexmin_y < Pa.PMLy + Pa.Ny)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else
+                        {
+
+                        }
                         this->inside_num = 0;
                         this->inside = NULL;
                     }
                     else
                     {
+                        if(indexmin_y < Pa.PMLy)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else if(indexmin_y >= Pa.PMLy && indexmin_y < Pa.PMLy + Pa.Ny)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else
+                        {
+
+                        }
                         this->inside_num = 1;
                         Inside *ins = new Inside[this->inside_num];
                         ins[0].indexmin_x = this->indexmin_x;
@@ -907,6 +1389,32 @@ void Partition::setInside(AFDP3D Pa)
                 {
                     if(indexmax_z < Pa.PMLz + Pa.Nz)
                     {
+                        if(indexmin_y < Pa.PMLy)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else if(indexmin_y >= Pa.PMLy && indexmin_y < Pa.PMLy + Pa.Ny)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else
+                        {
+
+                        }
                         this->inside_num = 2;
                         Inside *ins = new Inside[this->inside_num];
                         ins[0].indexmin_x = this->indexmin_x;
@@ -928,6 +1436,32 @@ void Partition::setInside(AFDP3D Pa)
                     }
                     else
                     {
+                        if(indexmin_y < Pa.PMLy)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else if(indexmin_y >= Pa.PMLy && indexmin_y < Pa.PMLy + Pa.Ny)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else
+                        {
+
+                        }
                         this->inside_num = 3;
                         Inside *ins = new Inside[this->inside_num];
                         ins[0].indexmin_x = this->indexmin_x;
@@ -959,6 +1493,32 @@ void Partition::setInside(AFDP3D Pa)
                 {
                     if(indexmax_z < Pa.PMLz + Pa.Nz)
                     {
+                        if(indexmin_y < Pa.PMLy)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else if(indexmin_y >= Pa.PMLy && indexmin_y < Pa.PMLy + Pa.Ny)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else
+                        {
+
+                        }
                         this->inside_num = 1;
                         Inside *ins = new Inside[this->inside_num];
                         ins[0].indexmin_x = Pa.PMLx + Pa.Nx;
@@ -973,6 +1533,32 @@ void Partition::setInside(AFDP3D Pa)
                     }
                     else
                     {
+                        if(indexmin_y < Pa.PMLy)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else if(indexmin_y >= Pa.PMLy && indexmin_y < Pa.PMLy + Pa.Ny)
+                        {
+                            if(indexmax_y < Pa.PMLy + Pa.Ny)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else
+                        {
+
+                        }
                         this->inside_num = 2;
                         Inside *ins = new Inside[this->inside_num];
                         ins[0].indexmin_x = this->indexmin_x;
@@ -1014,7 +1600,7 @@ void Partition::setInside(AFDP3D Pa)
 //        cout << this->inside_num << endl;
     for(uint i = 0; i < this->inside_num; ++i)
     {
-        this->inside_length += this->inside[i].getlength_x() * this->inside[i].getlength_z();
+        this->inside_length += this->inside[i].getlength_x() * this->inside[i].getlength_y() * this->inside[i].getlength_z();
     }
 }
 

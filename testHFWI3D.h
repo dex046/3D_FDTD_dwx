@@ -19,7 +19,6 @@
 #include    "Partition.h"
 #include    "DataTran.h"
 #include	<iostream>
-#include    <fstream>
 #include	<stdio.h>
 #include	<string.h>
 #include	<math.h>
@@ -27,6 +26,14 @@
 #include	<time.h>
 #include	"RWsgy.h"
 #include	"fftw3.h"
+
+#define     TOP     0
+#define     LEFT    1
+#define     BOTTOM  2
+#define     RIGHT   3
+
+#define     ADD         1
+#define     SUBSTRACT   0
 
 //#define		uint			unsigned int
 //#define		usht			unsigned short
@@ -293,7 +300,7 @@ void StepResidual(AFDP3D Pa,
 // 求取残差反传波场震源
 void StepResidualConj(AFDP3D Pa,
                    CPUVs *plan,
-                   uint Rn);
+                   uint Rn, const Partition &pt);
 
 // 残差反传加震源
 void AddResidual(AFDP3D Pa,

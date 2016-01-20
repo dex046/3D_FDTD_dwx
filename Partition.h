@@ -6,7 +6,7 @@
 #define PARTITION_H
 //#include "testTDFWI.h"
 #include <vector>
-
+#include <fstream>
 #include <limits.h>
 #include <stddef.h>
 #include <tuple>

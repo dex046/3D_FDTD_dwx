@@ -32,8 +32,8 @@ int main(int argc, char ** argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &p_size);
 
-    uint cpu_x = 2, cpu_y = 2, cpu_z = 2;
-    uint shot_x = 1, shot_y = 1, shot_z = 4;
+    uint cpu_x = 2, cpu_y = 1, cpu_z = 2;
+    uint shot_x = 2, shot_y = 1, shot_z = 2;
 
 
 
@@ -47,7 +47,7 @@ int main(int argc, char ** argv)
     Pa->dy = 10.0f;
     Pa->dz = 10.0f;
     Pa->f0 = 10.0f;
-    Pa->Nt = 1000.0f;
+    Pa->Nt = 1000;////////1000
     Pa->Nx = 200;
     Pa->Ny = 8;
     Pa->Nz = 100;
@@ -94,6 +94,8 @@ int main(int argc, char ** argv)
 //        }
     }
 
+
+
     int group_in_size = p_size / ip->ShotN;
     int *ranks = new int[group_in_size];
     int temp = rank % ip->ShotN;
@@ -101,7 +103,9 @@ int main(int argc, char ** argv)
     {
         ranks[i] = temp + i * ip->ShotN;
     }
-
+//    MPI_Barrier(MPI_COMM_WORLD);
+//    if(rank == ROOT_ID)
+//    cout << "now1" <<endl;
     MPI_Group comm_group, newgroup;
     MPI_Comm mycomm;
 
@@ -111,14 +115,19 @@ int main(int argc, char ** argv)
     MPI_Comm_create(MPI_COMM_WORLD, newgroup, &mycomm);
 
     Partition pt(Pa, ip, nnx, nny, nnz, cpu_x, cpu_y, cpu_z, shot_x, shot_y, shot_z, temph_U, temph_VW, 8, rank, p_size, rank / ip->ShotN, group_in_size);
-
-    uint length_x = pt.getblockLength_x();
-    uint length_y = pt.getblockLength_y();
-    uint length_z = pt.getblockLength_z();
+//H_Border temph_Vp = pt.geth_Vp();
+//cout << temph_Vp.topborder << " " << temph_Vp.leftborder << " " << temph_Vp.bottomborder << " " << temph_Vp.rightborder << " " << temph_Vp.frontborder << " " << temph_Vp.backborder << endl;
+    uint block_x = pt.getblockLength_x();
+    uint block_y = pt.getblockLength_y();
+    uint block_z = pt.getblockLength_z();
 
     uint interiorlength_x = pt.getinteriorLength_x();
     uint interiorlength_y = pt.getinteriorLength_y();
     uint interiorlength_z = pt.getinteriorLength_z();
+
+//    MPI_Barrier(MPI_COMM_WORLD);
+//    //if(rank == 0)
+//    cout << interiorlength_y << endl;
 
     uint RL_num = pt.getRL_num();
 
@@ -133,10 +142,10 @@ int main(int argc, char ** argv)
 
     try
     {
-        ip->TrueVp = new float[length_z * length_y * length_x];
-        memset((void *)ip->TrueVp, 0, sizeof(float) * length_z * length_y * nnx);
-        ip->CurrVp = new float[length_z * length_y * length_x];
-        memset((void *)ip->CurrVp, 0, sizeof(float) * length_z * length_y * length_x);
+        ip->TrueVp = new float[block_z * block_y * block_x];
+        memset((void *)ip->TrueVp, 0, sizeof(float) * block_z * block_y * block_x);
+        ip->CurrVp = new float[block_z * block_y * block_x];
+        memset((void *)ip->CurrVp, 0, sizeof(float) * block_z * block_y * block_x);
 
         ip->GradVp = new float[interiorlength_z * interiorlength_y * interiorlength_x];
         memset((void *)ip->GradVp, 0, sizeof(float) * interiorlength_z * interiorlength_y * interiorlength_x);
@@ -157,33 +166,33 @@ int main(int argc, char ** argv)
     //ReadData(InitVp, ip->CurrVp, 0);
 
     int *temp_iz = new int[1];
-    for (uint iz = 0; iz < length_z; iz++)
+    for (uint iz = 0; iz < block_z; iz++)
     {
-        for (uint iy = 0; iy < length_y; iy++)
+        for (uint iy = 0; iy < block_y; iy++)
         {
-            for (uint ix = 0; ix < length_x; ix++)
+            for (uint ix = 0; ix < block_x; ix++)
             {
                 *temp_iz = iz + indexmin_z;
                 if (*temp_iz < Pa->PMLz + (uint)(Pa->Nz / 2))
                 {
-                    ip->TrueVp[iz * length_y * length_x + iy * length_x + ix] = powf(2000.0f, 2.0f);
+                    ip->TrueVp[iz * block_y * block_x + iy * block_x + ix] = powf(2000.0f, 2.0f);
                 }
                 else
                 {
-                    ip->TrueVp[iz * length_y * length_x + iy * length_x + ix] = powf(4000.0f, 2.0f);
+                    ip->TrueVp[iz * block_y * block_x + iy * block_x + ix] = powf(4000.0f, 2.0f);
                 }
 
                 if (*temp_iz < Pa->PMLz + 5)
                 {
-                    ip->CurrVp[iz * length_y * length_x + iy * length_x + ix] = powf(2000.0f, 2.0f);
+                    ip->CurrVp[iz * block_y * block_x + iy * block_x + ix] = powf(2000.0f, 2.0f);
                 }
                 else if (*temp_iz <= Pa->PMLz + Pa->Nz)
                 {
-                    ip->CurrVp[iz * length_y * length_x + iy * length_x + ix] = powf((2000.0f + 2000.0f * (iz - Pa->PMLz - 5) / (Pa->Nz - 5)), 2.0f);
+                    ip->CurrVp[iz * block_y * block_x + iy * block_x + ix] = powf((2000.0f + 2000.0f * (*temp_iz - Pa->PMLz - 5) / (Pa->Nz - 5)), 2.0f);
                 }
                 else
                 {
-                    ip->CurrVp[iz * length_y * length_x + iy * length_x + ix] = powf(4000.0f, 2.0f);
+                    ip->CurrVp[iz * block_y * block_x + iy * block_x + ix] = powf(4000.0f, 2.0f);
                 }
             }
         }
@@ -215,12 +224,22 @@ int main(int argc, char ** argv)
             cout << "Allocation failed: " << e.what() << endl;
         }
     }
+//    MPI_Barrier(MPI_COMM_WORLD);
+//    if(rank == ROOT_ID)
+//    cout << "now3" <<endl;
+
 
     // 给全局变量开辟空间
     MallocVariables(*Pa, ip, plan, pt);
 
     // 求取NPML的参数
     GenerateNPML(*Pa, plan, pt);
+
+
+//    MPI_Barrier(MPI_COMM_WORLD);
+//    if(rank == ROOT_ID)
+//    cout << "now5" <<endl;
+
 
     if(rank == ROOT_ID)
     {
@@ -358,9 +377,9 @@ int main(int argc, char ** argv)
     fopen(GradVp, "wb");
     fopen(InvertedVp, "wb");
 
-    write_sgs_t_Data(TrueSg, (usht)Pa->Nt, (usht)ip->St[0].rn, (usht)(Pa->dt * 1000000), sgs_t, pt, *Pa, 1);
-    WriteData(GradVp, Pa->Nz, Pa->Nx * Pa->Ny, Pa->dz * 1000, ip->GradVp, 0, pt, *Pa, WRITE_INTER);
-    WriteData(InvertedVp, nnz, nnx * nny, Pa->dz * 1000, ip->CurrVp, 0, pt, *Pa, WRITE_ALL);
+//    write_sgs_t_Data(TrueSg, (usht)Pa->Nt, (usht)ip->St[0].rn, (usht)(Pa->dt * 1000000), sgs_t, pt, *Pa, 1);
+//    WriteData(GradVp, Pa->Nz, Pa->Nx * Pa->Ny, Pa->dz * 1000, ip->GradVp, 0, pt, *Pa, WRITE_INTER);
+//    WriteData(InvertedVp, nnz, nnx * nny, Pa->dz * 1000, ip->CurrVp, 0, pt, *Pa, WRITE_ALL);
 
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Finalize();
