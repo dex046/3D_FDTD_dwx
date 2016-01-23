@@ -34,8 +34,8 @@ Partition::Partition(const AFDP3D *Pa, const IP *ip, uint totallength_x, uint to
     this->blockPosition_y = (rank % this->sumBlock_x * this->sumBlock_y) / this->sumBlock_x;
     this->blockPosition_z = rank / (this->sumBlock_x * this->sumBlock_y);
 
-    this->in_blockPosition_x = (in_rank % this->in_sumBlock_x * this->in_sumBlock_y) % this->in_sumBlock_x;
-    this->in_blockPosition_y = (in_rank % this->in_sumBlock_x * this->in_sumBlock_y) / this->in_sumBlock_x;
+    this->in_blockPosition_x = (in_rank % (this->in_sumBlock_x * this->in_sumBlock_y)) % this->in_sumBlock_x;
+    this->in_blockPosition_y = (in_rank % (this->in_sumBlock_x * this->in_sumBlock_y)) / this->in_sumBlock_x;
     this->in_blockPosition_z = in_rank / (this->in_sumBlock_x * this->in_sumBlock_y);
 
     this->blockLength_x = totallength_x / this->in_sumBlock_x;//
@@ -311,7 +311,7 @@ bool Partition::in_islastblock_x() const
 }
 bool Partition::in_islastblock_y() const
 {
-    return (this->in_rank % (this->in_sumBlock_x * this->in_sumBlock_y)) / this->in_sumBlock_x == this->sumBlock_y - 1;
+    return (this->in_rank % (this->in_sumBlock_x * this->in_sumBlock_y)) / this->in_sumBlock_x == this->in_sumBlock_y - 1;
 }
 bool Partition::in_islastblock_z() const
 {

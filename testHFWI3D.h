@@ -31,6 +31,8 @@
 #define     LEFT    1
 #define     BOTTOM  2
 #define     RIGHT   3
+#define     FRONT   4
+#define     BACK    5
 
 #define     ADD         1
 #define     SUBSTRACT   0

@@ -32,8 +32,8 @@ int main(int argc, char ** argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &p_size);
 
-    uint cpu_x = 2, cpu_y = 1, cpu_z = 2;
-    uint shot_x = 2, shot_y = 1, shot_z = 2;
+    uint cpu_x = 1, cpu_y = 8, cpu_z = 1;
+    uint shot_x = 2, shot_y = 2, shot_z = 1;
 
 
 
@@ -66,8 +66,8 @@ int main(int argc, char ** argv)
     IP *ip;
     ip = new IP[1];
     memset((void *)ip, 0, sizeof(IP));
-    ip->ShotN = 1;
-    ip->IterN = 1;
+    ip->ShotN = 2;
+    ip->IterN = 2;
     ip->FreqN = 6;
     ip->Alpha = 0.0f;
 
@@ -117,6 +117,10 @@ int main(int argc, char ** argv)
     Partition pt(Pa, ip, nnx, nny, nnz, cpu_x, cpu_y, cpu_z, shot_x, shot_y, shot_z, temph_U, temph_VW, 8, rank, p_size, rank / ip->ShotN, group_in_size);
 //H_Border temph_Vp = pt.geth_Vp();
 //cout << temph_Vp.topborder << " " << temph_Vp.leftborder << " " << temph_Vp.bottomborder << " " << temph_Vp.rightborder << " " << temph_Vp.frontborder << " " << temph_Vp.backborder << endl;
+//    if(1)
+//    {
+//        cout << pt.get_in_rank() << " " << pt.in_isfirstblock_z() << " " << pt.in_islastblock_z() << endl;
+//    }
     uint block_x = pt.getblockLength_x();
     uint block_y = pt.getblockLength_y();
     uint block_z = pt.getblockLength_z();
@@ -125,6 +129,10 @@ int main(int argc, char ** argv)
     uint interiorlength_y = pt.getinteriorLength_y();
     uint interiorlength_z = pt.getinteriorLength_z();
 
+//    if(rank == 3)
+//    {
+//        cout << pt.geth_Vp().backborder << endl;
+//    }
 //    MPI_Barrier(MPI_COMM_WORLD);
 //    //if(rank == 0)
 //    cout << interiorlength_y << endl;
@@ -243,34 +251,38 @@ int main(int argc, char ** argv)
 
     if(rank == ROOT_ID)
     {
-        cout << "********************************************************************************************" << endl;
-        cout << "Doing 3D Hybrid Full Waveform Inversion ..." << endl;
-        cout << "Time domain Forward modeling and frequency domain inversion" << endl;
-        cout << "Parameters of Inversion are as follows:" << endl;
-        cout << "\tNx = " << Pa->Nx << endl;
-        cout << "\tNy = " << Pa->Ny << endl;
-        cout << "\tNz = " << Pa->Nz << endl;
-        cout << "\tdx = " << Pa->dx << "m" << endl;
-        cout << "\tdy = " << Pa->dy << "m" << endl;
-        cout << "\tdz = " << Pa->dz << "m" << endl;
-        cout << "\tNt = " << Pa->Nt << endl;
-        cout << "\tdt = " << Pa->dt << "s" << endl;
-        cout << "\tNpml = " << Pa->PMLx << endl;
-    #ifndef _FROM_TXT_
-        cout << "\tf0 = " << Pa->f0 << endl;
-    #endif
-        cout << "\tNshot = " << ip->ShotN << endl;
-        cout << "\tIteration number = " << ip->IterN << endl;
-        cout << "\tUsing " << ip->FreqN << " frequencies" << endl;
-        cout << "\tf_min = " << (StartFreq / 2.0f / PI) << "Hz" << endl;
-        cout << "\tf_int = " << (InterFreq / 2.0f / PI) << "Hz" << endl;
-        cout << "\tf_max = " << ((StartFreq + (ip->FreqN - 1) * InterFreq) / (2.0f * PI)) << "Hz" << endl;
-        //cout << "---------------------------------------------------------" << endl;
-    #ifdef _FROM_SGY_
-        cout << "\tReading the wavelet from sgy" << endl;
-    #endif
-        cout << "********************************************************************************************" << endl;
+//        cout << "********************************************************************************************" << endl;
+//        cout << "(" << shot_x << " * " << shot_y << " * " << shot_z << ") * " << ip->ShotN << endl;
+//        cout << "********************************************************************************************" << endl;
+//        cout << "Doing 3D Hybrid Full Waveform Inversion ..." << endl;
+//        cout << "Time domain Forward modeling and frequency domain inversion" << endl;
+//        cout << "Parameters of Inversion are as follows:" << endl;
+//        cout << "\tNx = " << Pa->Nx << endl;
+//        cout << "\tNy = " << Pa->Ny << endl;
+//        cout << "\tNz = " << Pa->Nz << endl;
+//        cout << "\tdx = " << Pa->dx << "m" << endl;
+//        cout << "\tdy = " << Pa->dy << "m" << endl;
+//        cout << "\tdz = " << Pa->dz << "m" << endl;
+//        cout << "\tNt = " << Pa->Nt << endl;
+//        cout << "\tdt = " << Pa->dt << "s" << endl;
+//        cout << "\tNpml = " << Pa->PMLx << endl;
+//    #ifndef _FROM_TXT_
+//        cout << "\tf0 = " << Pa->f0 << endl;
+//    #endif
+//        cout << "\tNshot = " << ip->ShotN << endl;
+//        cout << "\tIteration number = " << ip->IterN << endl;
+//        cout << "\tUsing " << ip->FreqN << " frequencies" << endl;
+//        cout << "\tf_min = " << (StartFreq / 2.0f / PI) << "Hz" << endl;
+//        cout << "\tf_int = " << (InterFreq / 2.0f / PI) << "Hz" << endl;
+//        cout << "\tf_max = " << ((StartFreq + (ip->FreqN - 1) * InterFreq) / (2.0f * PI)) << "Hz" << endl;
+//        //cout << "---------------------------------------------------------" << endl;
+//    #ifdef _FROM_SGY_
+//        cout << "\tReading the wavelet from sgy" << endl;
+//    #endif
+//        cout << "********************************************************************************************" << endl;
 
+        fout << "********************************************************************************************" << endl;
+        fout << "(" << shot_x << " * " << shot_y << " * " << shot_z << ") * " << ip->ShotN << endl;
         fout << "********************************************************************************************" << endl;
         fout << "Doing 3D Hybrid Full Waveform Inversion ..." << endl;
         fout << "Time domain Forward modeling and frequency domain inversion" << endl;
@@ -305,7 +317,7 @@ int main(int argc, char ** argv)
     if(rank == ROOT_ID)
     {
         // 求取观测波场
-        cout << "\tCalculating the observed data..." << endl;
+//        cout << "\tCalculating the observed data..." << endl;
 
         fout << "\tCalculating the observed data..." << endl;
     }
@@ -316,7 +328,7 @@ int main(int argc, char ** argv)
 
     if(rank == ROOT_ID)
     {
-        cout << "\tCalculating the observed data used:\t" << duration / CLOCKS_PER_SEC << "s" << endl;
+//        cout << "\tCalculating the observed data used:\t" << duration / CLOCKS_PER_SEC << "s" << endl;
 
         fout << "\tCalculating the observed data used:\t" << duration / CLOCKS_PER_SEC << "s" << endl;
     }
@@ -330,8 +342,8 @@ int main(int argc, char ** argv)
         if(rank == ROOT_ID)
         {
             // 求取梯度
-            cout << "\n\tDoing the " << It << "th iteration" << endl;
-            cout << "\tCalculating the Gradient..." << endl;
+//            cout << "\n\tDoing the " << It << "th iteration" << endl;
+//            cout << "\tCalculating the Gradient..." << endl;
 
             fout << "\n\tDoing the " << It << "th iteration" << endl;
             fout << "\tCalculating the Gradient..." << endl;
@@ -347,24 +359,27 @@ int main(int argc, char ** argv)
         CalStepLength(*Pa, ip, plan, sgs_t, sgs_c, e, pt, mycomm);
         duration = clock() - begin;
 
+        MPI_Barrier(MPI_COMM_WORLD);
         if(rank == ROOT_ID)
         {
-            cout << "\tObjective function value:\t" << ip->ObjIter[It] << endl;
-            cout << "\tStep length:\t" << ip->Alpha << endl;
-            cout << "\tThe " << It << "th iteration used " << duration / CLOCKS_PER_SEC << "s" << endl;
+//            cout << "\tObjective function value:\t" << ip->ObjIter[It] << endl;
+//            cout << "\tStep length:\t" << ip->Alpha << endl;
+//            cout << "\tThe " << It << "th iteration used " << duration / CLOCKS_PER_SEC << "s" << endl;
 
             fout << "\tObjective function value:\t" << ip->ObjIter[It] << endl;
             fout << "\tStep length:\t" << ip->Alpha << endl;
             fout << "\tThe " << It << "th iteration used " << duration / CLOCKS_PER_SEC << "s" << endl;
         }
 
+        //cout << rank << endl;
         // 下一步迭代预处理
         PreProcess(*Pa, ip, plan, pt, mycomm);
     }
 
+    MPI_Barrier(MPI_COMM_WORLD);
     if(rank == ROOT_ID)
     {
-        cout << "\tWriting data to .sgy" << endl;
+//        cout << "\tWriting data to .sgy" << endl;
 
         fout << "\tWriting data to .sgy" << endl;
     }
@@ -380,6 +395,7 @@ int main(int argc, char ** argv)
 //    write_sgs_t_Data(TrueSg, (usht)Pa->Nt, (usht)ip->St[0].rn, (usht)(Pa->dt * 1000000), sgs_t, pt, *Pa, 1);
 //    WriteData(GradVp, Pa->Nz, Pa->Nx * Pa->Ny, Pa->dz * 1000, ip->GradVp, 0, pt, *Pa, WRITE_INTER);
 //    WriteData(InvertedVp, nnz, nnx * nny, Pa->dz * 1000, ip->CurrVp, 0, pt, *Pa, WRITE_ALL);
+
 
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Finalize();

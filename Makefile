@@ -28,4 +28,4 @@ main.o: main.cpp
 clean:
 	rm -rf *.o
 	rm -rf sanwei-bing
-	rm -rf *.txt
+	ls *.txt | grep -v information.txt | xargs rm -rf 

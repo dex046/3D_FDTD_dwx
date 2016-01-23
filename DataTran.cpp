@@ -502,6 +502,8 @@ void dataGather(float *data, const Partition& pt, int tag, const MPI_Comm& mycom
         delete[] buf;
     }
 
+//    if(pt.getrank() == 3)
+//    cout << "EEEE" << backborder << endl;
     if(backborder && !pt.in_isfirstblock_y())
     {
         length = block_z * backborder * block_x;
@@ -527,6 +529,9 @@ void dataTransport(float *data, const Partition& pt, int tag, int it, const MPI_
     uint pos_x = pt.get_in_blockPosition_x();
     uint pos_y = pt.get_in_blockPosition_y();
     uint pos_z = pt.get_in_blockPosition_z();
+
+//    MPI_Barrier(MPI_COMM_WORLD);
+//    cout << pt.getrank() << " " << pos_y << endl;
 
     int rank = pt.getrank();
     int in_rank = pt.get_in_rank();
@@ -1004,7 +1009,7 @@ void dataTransport_Vp(float *data, const Partition& pt, int tag, const AFDP3D &P
     {
         for(uint i = 1; i <= blockPosition_x; ++i)
         {
-            uint length = 1 * block_z * block_y;
+            uint length = transportlength_side * block_z * block_y;
             float *buf = new float[length];
             copydatatobuf_Vp(data, buf, pt, transportlength_side, RIGHT_TO_LEFT, Pa);
             MPI_Send(buf, length, MPI_FLOAT, in_rank - i, STEP_VP + RIGHT_TO_LEFT, mycomm);
@@ -1016,7 +1021,7 @@ void dataTransport_Vp(float *data, const Partition& pt, int tag, const AFDP3D &P
     {
         for(uint i = 1; i < sumBlock_x - blockPosition_x; ++i)
         {
-            uint length = 1 * block_z * block_y;
+            uint length = transportlength_side * block_z * block_y;
             float *buf = new float[length];
             copydatatobuf_Vp(data, buf, pt, transportlength_side, LEFT_TO_RIGHT, Pa);
             MPI_Send(buf, length, MPI_FLOAT, in_rank + i, STEP_VP + LEFT_TO_RIGHT, mycomm);
@@ -1028,7 +1033,7 @@ void dataTransport_Vp(float *data, const Partition& pt, int tag, const AFDP3D &P
     {
         for(uint i = 1; i <= blockPosition_z ; ++i)
         {
-            uint length = 1 * block_x * block_y;
+            uint length = transportlength_side * block_x * block_y;
             float *buf = new float[length];
             copydatatobuf_Vp(data, buf, pt, transportlength_side, BOTTOM_TO_TOP, Pa);
             MPI_Send(buf, length, MPI_FLOAT, in_rank - (i * sumBlock_x * sumBlock_y), STEP_VP + BOTTOM_TO_TOP, mycomm);
@@ -1040,7 +1045,7 @@ void dataTransport_Vp(float *data, const Partition& pt, int tag, const AFDP3D &P
     {//cout << "wwwwww" << rank << endl;
         for(uint i = 1; i < sumBlock_z - blockPosition_z; ++i)
         {
-            uint length = 1 * block_x * block_y;
+            uint length = transportlength_side * block_x * block_y;
             float *buf = new float[length];
             copydatatobuf_Vp(data, buf, pt, transportlength_side, TOP_TO_BOTTOM, Pa);
             MPI_Send(buf, length, MPI_FLOAT, in_rank + (i * sumBlock_x * sumBlock_y), STEP_VP + TOP_TO_BOTTOM, mycomm);
@@ -1049,10 +1054,10 @@ void dataTransport_Vp(float *data, const Partition& pt, int tag, const AFDP3D &P
         }
     }
     if(tag == BACK_TO_FRONT)
-    {
+    {//cout << "EEE" << in_rank + (1 * sumBlock_x) << endl;
         for(uint i = 1; i < sumBlock_y - blockPosition_y; ++i)
         {
-            uint length = 1 * block_x * block_z;
+            uint length = transportlength_side * block_x * block_z;
             float *buf = new float[length];
             copydatatobuf_Vp(data, buf, pt, transportlength_side, BACK_TO_FRONT, Pa);
             MPI_Send(buf, length, MPI_FLOAT, in_rank + (i * sumBlock_x), STEP_VP + BACK_TO_FRONT, mycomm);
@@ -1064,7 +1069,7 @@ void dataTransport_Vp(float *data, const Partition& pt, int tag, const AFDP3D &P
     {
         for(uint i = 1; i <= blockPosition_y; ++i)
         {
-            uint length = 1 * block_x * block_z;
+            uint length = transportlength_side * block_x * block_z;
             float *buf = new float[length];
             copydatatobuf_Vp(data, buf, pt, transportlength_side, FRONT_TO_BACK, Pa);
             MPI_Send(buf, length, MPI_FLOAT, in_rank - (i * sumBlock_x), STEP_VP + FRONT_TO_BACK, mycomm);

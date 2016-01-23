@@ -2306,6 +2306,15 @@ void CalTrueWF(AFDP3D Pa,
                 }
             }
 
+
+
+//            MPI_Barrier(MPI_COMM_WORLD);
+//            if(rank == ROOT_ID)
+//            {
+//                cout << "it=" << it << endl;
+//            }
+
+
 //            if(it == 2)
 //            {
 //                if(pt.getrank() == 1)
@@ -2349,11 +2358,7 @@ void CalTrueWF(AFDP3D Pa,
                 plan->h_PHIy_U_y, plan->h_PHIz_U_z,
                 plan->h_Bx, plan->h_By, plan->h_Bz, pt, it);
 
-//            MPI_Barrier(MPI_COMM_WORLD);
-//            if(rank == ROOT_ID)
-//            {
-//                cout << "it=" << it << endl;
-//            }
+
 
 
 
@@ -2840,9 +2845,9 @@ void CalGrad(AFDP3D Pa,
                 plan->h_PHIx_U_x_r, plan->h_PHIy_U_y_r, plan->h_PHIz_U_z_r,
                 plan->h_Bx, plan->h_By, plan->h_Bz, pt, it);
 
-            dataTransport(plan->h_V, pt, STEP_V, it, mycomm);//send data
-            dataTransport(plan->h_K, pt, STEP_K, it, mycomm);//send data
-            dataTransport(plan->h_W, pt, STEP_W, it, mycomm);//send data
+            dataTransport(plan->h_V_r, pt, STEP_V, it, mycomm);//send data
+            dataTransport(plan->h_K_r, pt, STEP_K, it, mycomm);//send data
+            dataTransport(plan->h_W_r, pt, STEP_W, it, mycomm);//send data
 
             // 一步更新V和W的卷积项
             StepPHIVKW(Pa, plan->h_V_r, plan->h_K_r, plan->h_W_r,
@@ -3007,7 +3012,7 @@ void CalGrad(AFDP3D Pa,
 
         if(pt.getrank() == 3)
         {
-            ofstream fout("h_U_freq3 .txt");
+            ofstream fout("h_U_freq3.txt");
             ofstream fout1("h_U_freq_r3.txt");
             for(int nf = 0; nf < ip->FreqN; ++nf)
             {
@@ -3165,7 +3170,7 @@ void CalGrad(AFDP3D Pa,
                 }
             }
         }
-//cout << "test" << rank << endl;
+//cout << "zzz" << rank << endl;
         delete buf_obj;
 
 //        if(rank >= min_rank_RL && rank <= max_rank_RL)
@@ -3383,8 +3388,8 @@ void CalStepLength(AFDP3D Pa,
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Bcast(&MV, 1, MPI_FLOAT, ROOT_ID, MPI_COMM_WORLD);
 
-    if(rank == ROOT_ID)
-    cout << "max" << MV << endl;
+//    if(rank == ROOT_ID)
+//    cout << "max" << MV << endl;
 
 
     if (MV > 1.0e-10f)
@@ -3438,9 +3443,20 @@ void CalStepLength(AFDP3D Pa,
     {
         dataTransport_Vp(plan->h_Vp, pt, LEFT_TO_RIGHT, Pa, mycomm);
     }
+    if(*(begin + FRONT))
+    {//cout << "FRONT" << rank << endl;
+        dataTransport_Vp(plan->h_Vp, pt, BACK_TO_FRONT, Pa, mycomm);
+    }
+    if(*(begin + BACK))
+    {//cout << "BACK" << rank << endl;
+        dataTransport_Vp(plan->h_Vp, pt, FRONT_TO_BACK, Pa, mycomm);
+    }
 
-    MPI_Barrier(MPI_COMM_WORLD);
+
     dataGather(plan->h_Vp, pt, STEP_VP, mycomm);
+    MPI_Barrier(MPI_COMM_WORLD);
+
+
 
     UpdateVpPML(Pa, plan->h_Vp, plan->h_Grad, e, pt);
 
@@ -3482,11 +3498,11 @@ void CalStepLength(AFDP3D Pa,
     MPI_Bcast(&max_rank_RL, 1, MPI_INT, ROOT_ID, mycomm);
     MPI_Bcast(&min_rank_RL, 1, MPI_INT, ROOT_ID, mycomm);
 
-    if(rank == ROOT_ID)
-    {
-        cout << "max_rank" << max_rank_RL << endl;
-        cout << "min_rank" << min_rank_RL << endl;
-    }
+//    if(rank == ROOT_ID)
+//    {
+//        cout << "max_rank" << max_rank_RL << endl;
+//        cout << "min_rank" << min_rank_RL << endl;
+//    }
 
     uint is = rank % ip->ShotN;
 
@@ -3523,11 +3539,11 @@ void CalStepLength(AFDP3D Pa,
         // 对时间进行循环
         for (uint it = 0; it < Pa.Nt; it++)
         {
-            MPI_Barrier(MPI_COMM_WORLD);
-            if(rank == ROOT_ID)
-            {
-                cout << "stepit=" << it << endl;
-            }
+//            MPI_Barrier(MPI_COMM_WORLD);
+//            if(rank == ROOT_ID)
+//            {
+//                cout << "stepit=" << it << endl;
+//            }
 
             for(uint iz = 0; iz < block_z; ++iz)
             {
@@ -3702,8 +3718,8 @@ void CalStepLength(AFDP3D Pa,
 
             MPI_Barrier(mycomm);
             MPI_Bcast(&ip->Alpha, 1, MPI_FLOAT, max_rank_RL, mycomm);
-            if(rank == ROOT_ID)
-                cout << "alpha=" << ip->Alpha << endl;
+//            if(rank == ROOT_ID)
+//                cout << "alpha=" << ip->Alpha << endl;
         }
     //}//shotN
 
@@ -3787,8 +3803,8 @@ void PreProcess(AFDP3D Pa,
     int interiorLength_y = pt.getinteriorLength_y();
     int interiorLength_z = pt.getinteriorLength_z();
 
-    if(interiorLength_x == 0 || interiorLength_y == 0 || interiorLength_z == 0)
-        return;
+//    if(interiorLength_x == 0 || interiorLength_y == 0 || interiorLength_z == 0)
+//        return;
 
     int interior_min_x = pt.getinteriormin_x();
     int interior_min_y = pt.getinteriormin_y();
@@ -3833,6 +3849,14 @@ void PreProcess(AFDP3D Pa,
     if(*(begin + RIGHT))
     {//cout << "what" << endl;
         dataTransport_Vp(plan->h_Vp, pt, LEFT_TO_RIGHT, Pa, mycomm);
+    }
+    if(*(begin + FRONT))
+    {
+        dataTransport_Vp(plan->h_Vp, pt, BACK_TO_FRONT, Pa, mycomm);
+    }
+    if(*(begin + BACK))
+    {
+        dataTransport_Vp(plan->h_Vp, pt, FRONT_TO_BACK, Pa, mycomm);
     }
 
     dataGather(plan->h_Vp, pt, STEP_VP, mycomm);
