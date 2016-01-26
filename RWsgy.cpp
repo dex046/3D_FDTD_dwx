@@ -230,9 +230,11 @@ bool ReadSgyData(char FileName[], Trace *trace, REEL reel,
     unsigned char f3200[3200];
 
     int length_x = pt.getblockLength_x();
+    int length_y = pt.getblockLength_y();
     int length_z = pt.getblockLength_z();
 
     uint totallength_x = pt.gettotallength_x();
+    uint totallength_y = pt.gettotallength_y();
     uint totallength_z = pt.gettotallength_z();
 
     // 根据文件中数据的存储形式来开辟空间
@@ -275,124 +277,143 @@ bool ReadSgyData(char FileName[], Trace *trace, REEL reel,
 
 
 
+
+
     int indexmin_x = pt.getindexmin_x();
+    int indexmin_y = pt.getindexmin_y();
     int indexmin_z = pt.getindexmin_z();
 
-    offset += indexmin_x * (totallength_z * sizeof(float) + 240) + indexmin_z * sizeof(float);
+    offset += indexmin_y * totallength_x * (totallength_z * sizeof(float) + 240) + indexmin_x * (totallength_z * sizeof(float) + 240) + indexmin_z * sizeof(float);
+    MPI_Offset before_set = offset;
 
-    for (int i = 0; i < length_x; i++)
+    for (int iy = 0; iy < length_y; iy++)
     {
-        if(pt.in_isfirstblock_z())
+        for (int ix = 0; ix < length_x; ++ix)
         {
-            // 读道头
-            ///fread(&trace[i].head.h2, 2, 120, fdata);//h2 h4 headstruct
-            MPI_File_read_at(fdata, offset, &trace[i].head.h2, 240, MPI_BYTE, &status);
-
-            // 如果是IBM的float
-            if (*BIBM)
+            if(pt.in_isfirstblock_z())
             {
-                for (int j = 0; j < 120; j++)//120??
-                {
-                    if (j / 2 == 7 || j / 2 == 8 || j / 2 == 17 || (j >= 44 && j < 91))
-                    {
-                        swap((short *)&trace[i].head.h2[j]);
-                    }
-                }
-                for (int j = 0; j < 60; j++)
-                {
-                    if (j == 7 || j == 8 || j == 17 || (j >= 22 && j < 46));
-                    else
-                    {
-                        swap(&trace[i].head.h4[j]);
-                    }
-                }
-            }
+                // 读道头
+                ///fread(&trace[i].head.h2, 2, 120, fdata);//h2 h4 headstruct
+                MPI_File_read_at(fdata, offset, &trace[iy * length_x + ix].head.h2, 240, MPI_BYTE, &status);
 
-            trace[i].head.h2[114] = 0;// ?114
-            if (trace[i].head.h2[57] != *SampleNum)///
-            {
-                return false;
-            }
-        }
-
-        offset += 240;
-
-        // IBM float
-        if (*DFormat == 1)
-        {
-
-//            fseek(fdata, 0, 0);
-//            fseek(fdata, i * (totallength_z * 4 + 240) + 240, 3600 + indexmin_x * (totallength_z * 4 + 240) + indexmin_z * 4);
-//            fread(TempData1, 4, length_z, fdata);
-            for (int ii = 0; ii < length_z; ii++)
-            {
+                // 如果是IBM的float
                 if (*BIBM)
                 {
-                    trace[i].data[ii] = IBMF4Swap(TempData1[ii]);
+                    for (int j = 0; j < 120; j++)//120??
+                    {
+                        if (j / 2 == 7 || j / 2 == 8 || j / 2 == 17 || (j >= 44 && j < 91))
+                        {
+                            swap((short *)&trace[iy * length_x + ix].head.h2[j]);
+                        }
+                    }
+                    for (int j = 0; j < 60; j++)
+                    {
+                        if (j == 7 || j == 8 || j == 17 || (j >= 22 && j < 46));
+                        else
+                        {
+                            swap(&trace[iy * length_x + ix].head.h4[j]);
+                        }
+                    }
+                }
+
+                trace[iy * length_x + ix].head.h2[114] = 0;// ?114
+                if (trace[iy * length_x + ix].head.h2[57] != *SampleNum)///
+                {
+                    return false;
+                }
+            }
+
+            offset += 240;
+
+            // IBM float
+            if (*DFormat == 1)
+            {
+
+    //            fseek(fdata, 0, 0);
+    //            fseek(fdata, i * (totallength_z * 4 + 240) + 240, 3600 + indexmin_x * (totallength_z * 4 + 240) + indexmin_z * 4);
+    //            fread(TempData1, 4, length_z, fdata);
+                for (int ii = 0; ii < length_z; ii++)
+                {
+                    if (*BIBM)
+                    {
+                        trace[iy * length_x + ix].data[ii] = IBMF4Swap(TempData1[ii]);
+                    }
+                    else
+                    {
+                        trace[iy * length_x + ix].data[ii] = TempData1[ii];
+                    }
+                }
+            }
+
+            // 4字节，两互补整数
+            else if (*DFormat == 2)
+            {
+    //            fseek(fdata, 0, 0);
+    //            fseek(fdata, i * (totallength_z * 4 + 240) + 240, 3600 + indexmin_x * (totallength_z * 4 + 240) + indexmin_z * 4);
+    //            fread(TempData2, 4, length_z, fdata);
+                for (int ii = 0; ii < length_z; ii++)
+                {
+                    if (*BIBM)
+                    {
+                        swap((int *)&TempData2[ii]);
+                    }
+                    trace[iy * length_x + ix].data[ii] = (float)TempData2[ii];
+                }
+            }
+
+            // 两字节，两互补整数
+            else if (*DFormat == 3)
+            {
+    //            fseek(fdata, 0, 0);
+    //            fseek(fdata, i * (totallength_z * 2 + 240) + 240, 3600 + indexmin_x * (totallength_z * 2 + 240) + indexmin_z * 2);
+    //            fread(TempData3, 2, length_z, fdata);
+                for (int ii = 0; ii < length_z; ii++)
+                {
+                    if (*BIBM)
+                    {
+                        swap((short *)&TempData3[ii]);
+                    }
+                    trace[iy * length_x + ix].data[ii] = TempData3[ii];
+                }
+            }
+
+            // IEEE浮点
+            else if (*DFormat == 5)///?? 5 ??
+            {
+                MPI_File_read_at(fdata, offset, TempData1, length_z, MPI_FLOAT, &status);
+
+                if(ix != length_x - 1)
+                {
+                    offset = before_set + (iy * totallength_x * (totallength_z * sizeof(float) + 240) + (ix + 1) * (totallength_z * sizeof(float) + 240));
                 }
                 else
                 {
-                    trace[i].data[ii] = TempData1[ii];
+                    offset = before_set + ((iy + 1) * totallength_x * (totallength_z * sizeof(float) + 240));
                 }
-            }
-        }
 
-        // 4字节，两互补整数
-        else if (*DFormat == 2)
-        {
-//            fseek(fdata, 0, 0);
-//            fseek(fdata, i * (totallength_z * 4 + 240) + 240, 3600 + indexmin_x * (totallength_z * 4 + 240) + indexmin_z * 4);
-//            fread(TempData2, 4, length_z, fdata);
-            for (int ii = 0; ii < length_z; ii++)
-            {
-                if (*BIBM)
+
+
+    //            fseek(fdata, i * (totallength_z * 4 + 240) + 240, 3600 + indexmin_x * (totallength_z * 4 + 240) + indexmin_z * 4);
+    //            fread(TempData1, 4, length_z, fdata);
+                for (int ii = 0; ii < length_z; ii++)
                 {
-                    swap((int *)&TempData2[ii]);
+                    if (*BIBM)
+                    {
+                        swap(&TempData1[ii]);
+                    }
+                    trace[iy * length_x + ix].data[ii] = TempData1[ii];
                 }
-                trace[i].data[ii] = (float)TempData2[ii];
             }
-        }
 
-        // 两字节，两互补整数
-        else if (*DFormat == 3)
-        {
-//            fseek(fdata, 0, 0);
-//            fseek(fdata, i * (totallength_z * 2 + 240) + 240, 3600 + indexmin_x * (totallength_z * 2 + 240) + indexmin_z * 2);
-//            fread(TempData3, 2, length_z, fdata);
-            for (int ii = 0; ii < length_z; ii++)
+            // 无卷头
+            else
             {
-                if (*BIBM)
-                {
-                    swap((short *)&TempData3[ii]);
-                }
-                trace[i].data[ii] = TempData3[ii];
+    //            fseek(fdata, 0, 0);
+    //            fseek(fdata, i * (totallength_z * 4 + 240) + 240, 3600 + indexmin_x * (totallength_z * 4 + 240) + indexmin_z * 4);
+    //            fread(trace[i].data, 4, length_z, fdata);
             }
         }
 
-        // IEEE浮点
-        else if (*DFormat == 5)///?? 5 ??
-        {
-            MPI_File_read_at(fdata, offset, TempData1, length_z, MPI_FLOAT, &status);
-            offset += totallength_z * sizeof(float);
-//            fseek(fdata, i * (totallength_z * 4 + 240) + 240, 3600 + indexmin_x * (totallength_z * 4 + 240) + indexmin_z * 4);
-//            fread(TempData1, 4, length_z, fdata);
-            for (int ii = 0; ii < length_z; ii++)
-            {
-                if (*BIBM)
-                {
-                    swap(&TempData1[ii]);
-                }
-                trace[i].data[ii] = TempData1[ii];
-            }
-        }
-
-        // 无卷头
-        else
-        {
-//            fseek(fdata, 0, 0);
-//            fseek(fdata, i * (totallength_z * 4 + 240) + 240, 3600 + indexmin_x * (totallength_z * 4 + 240) + indexmin_z * 4);
-//            fread(trace[i].data, 4, length_z, fdata);
-        }
     }
 
 

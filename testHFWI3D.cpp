@@ -103,13 +103,14 @@ void ReadData(char FileName[],
 //    cout << BIBM << endl;
 
     int length_x = pt.getblockLength_x();
+    int length_y = pt.getblockLength_y();
     int length_z = pt.getblockLength_z();
 
 //cout << "rank" << rank << "rank" << length_x << " " << length_z << " " << endl;
     Trace *trace;
-    trace = new Trace[length_x];
-    memset((void *)trace, 0, sizeof(Trace) * length_x);
-    for (n = 0; n < length_x; n++)
+    trace = new Trace[length_x * length_y];
+    memset((void *)trace, 0, sizeof(Trace) * length_x * length_y);
+    for (n = 0; n < length_x * length_y; n++)
     {
         trace[n].data = new float[length_z];
         memset((void *)trace[n].data, 0, sizeof(float) * length_z);
@@ -131,25 +132,29 @@ void ReadData(char FileName[],
 //        }
 //    }
     // write the trace data to Data
-    for(n = 0; n < length_x; ++n)
+    for(int iz = 0; iz < length_z; ++iz)
     {
-        for(m = 0; m < length_z; ++m)
+        for(int iy = 0; iy < length_y; ++iy)
         {
-            if(flag == 0)
+            for(int ix = 0; ix < length_x; ++ix)
             {
-                Data[m * length_x + n] = trace[n].data[m];
-                //cout << trace[n].data[m];
-            }
-            else
-            {
-                Data[n * length_z + m] = trace[n].data[m];
-                //cout << trace[n].data[m];
+                if(flag == 0)
+                {
+                    Data[iz * length_y * length_x + iy * length_x + ix] = trace[iy * length_x + ix].data[iz];
+                    //cout << trace[n].data[m];
+                }
+                else
+                {
+                    //Data[n * length_z + m] = trace[n].data[m];
+                    //cout << trace[n].data[m];
+                    cout << "data error!" << endl;
+                }
             }
         }
     }
 
     // free memory
-    for (n = 0; n < length_x; n++)
+    for (n = 0; n < length_x * length_y; n++)
     {
         delete []trace[n].data;
     }
@@ -3684,7 +3689,7 @@ void CalStepLength(AFDP3D Pa,
                     }
                     else
                     {
-                        ip->Alpha = (*plan->h_SumFenzi / *plan->h_SumFenmu) * e;
+
                     }
                 }
                 else
@@ -3711,21 +3716,31 @@ void CalStepLength(AFDP3D Pa,
                     buf[1] = *plan->h_SumFenmu;
                     if(in_rank != max_rank_RL)
                         MPI_Send(buf, 2, MPI_FLOAT, in_rank + 1, STEP_FEN, mycomm);
-                    else
-                        ip->Alpha = (*plan->h_SumFenzi / *plan->h_SumFenmu) * e;
+//                    else
+//                        ip->Alpha = (*plan->h_SumFenzi / *plan->h_SumFenmu) * e;
                 }
             }
-
+//cout << "nnnnn" << nf << endl;
             MPI_Barrier(mycomm);
-            MPI_Bcast(&ip->Alpha, 1, MPI_FLOAT, max_rank_RL, mycomm);
+            MPI_Bcast(plan->h_SumFenzi, 1, MPI_FLOAT, max_rank_RL, mycomm);
+            MPI_Bcast(plan->h_SumFenmu, 1, MPI_FLOAT, max_rank_RL, mycomm);
+            MPI_Barrier(mycomm);
+
+            //cout << "wwww" << rank << endl;
 //            if(rank == ROOT_ID)
 //                cout << "alpha=" << ip->Alpha << endl;
         }
     //}//shotN
 
+        ip->Alpha = (*plan->h_SumFenzi / *plan->h_SumFenmu) * e;
+        MPI_Barrier(mycomm);
+        MPI_Bcast(&ip->Alpha, 1, MPI_FLOAT, max_rank_RL, mycomm);
+
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Bcast(&ip->Alpha, 1, MPI_FLOAT, ROOT_ID, MPI_COMM_WORLD);
 
+    if(rank == ROOT_ID)
+        cout << "alpha=" << ip->Alpha << endl;
 
 //    if(RL_num)
 //    {

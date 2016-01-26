@@ -1,8 +1,8 @@
-Sat Jan 23 09:32:06 2016
+Mon Jan 25 22:30:22 2016
 
 ******************************************
 ********************************************************************************************
-(2 * 2 * 1) * 2
+(2 * 1 * 2) * 1
 ********************************************************************************************
 Doing 3D Hybrid Full Waveform Inversion ...
 Time domain Forward modeling and frequency domain inversion
@@ -17,11 +17,19 @@ Parameters of Inversion are as follows:
 	dt = 0.001s
 	Npml = 50
 	f0 = 10
-	Nshot = 2
-	Iteration number = 2
+	Nshot = 1
+	Iteration number = 1
 	Using 6 frequencies
 	f_min = 0.1Hz
 	f_int = 0.4Hz
 	f_max = 2.1Hz
 ********************************************************************************************
 	Calculating the observed data...
+	Calculating the observed data used:	257s
+
+	Doing the 0th iteration
+	Calculating the Gradient...
+	Objective function value:	14.2714
+	Step length:	1014.03
+	The 0th iteration used 738s
+	Writing data to .sgy

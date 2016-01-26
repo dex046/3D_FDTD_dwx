@@ -192,6 +192,7 @@ float Ricker(float f0,
 // 从Sgy文件中读取数据
 void ReadData(char FileName[],
               float *Data,
+              const Partition &pt,
               usht flag);
 
 void write_sgs_t_Data(const char * const FileName,

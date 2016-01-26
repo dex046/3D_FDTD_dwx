@@ -33,7 +33,7 @@ int main(int argc, char ** argv)
     MPI_Comm_size(MPI_COMM_WORLD, &p_size);
 
     uint cpu_x = 1, cpu_y = 8, cpu_z = 1;
-    uint shot_x = 2, shot_y = 2, shot_z = 1;
+    uint shot_x = 2, shot_y = 1, shot_z = 2;
 
 
 
@@ -66,8 +66,8 @@ int main(int argc, char ** argv)
     IP *ip;
     ip = new IP[1];
     memset((void *)ip, 0, sizeof(IP));
-    ip->ShotN = 2;
-    ip->IterN = 2;
+    ip->ShotN = 1;
+    ip->IterN = 1;
     ip->FreqN = 6;
     ip->Alpha = 0.0f;
 
@@ -167,45 +167,135 @@ int main(int argc, char ** argv)
 
 
     // 读入真实速度和初始速度
-    //char TrueVp[] = "TrueVp-test3D.sgy";
-    //char InitVp[] = "InitVp-test3D.sgy";
+    char TrueVp[] = "TrueVp-3D.sgy";
+    char InitVp[] = "InitVp-3D.sgy";
 
-    //ReadData(TrueVp, ip->TrueVp, 0);
-    //ReadData(InitVp, ip->CurrVp, 0);
+    ReadData(TrueVp, ip->TrueVp, pt, 0);
+    ReadData(InitVp, ip->CurrVp, pt, 0);
 
-    int *temp_iz = new int[1];
-    for (uint iz = 0; iz < block_z; iz++)
+    if(rank == 0)
     {
-        for (uint iy = 0; iy < block_y; iy++)
-        {
-            for (uint ix = 0; ix < block_x; ix++)
-            {
-                *temp_iz = iz + indexmin_z;
-                if (*temp_iz < Pa->PMLz + (uint)(Pa->Nz / 2))
-                {
-                    ip->TrueVp[iz * block_y * block_x + iy * block_x + ix] = powf(2000.0f, 2.0f);
-                }
-                else
-                {
-                    ip->TrueVp[iz * block_y * block_x + iy * block_x + ix] = powf(4000.0f, 2.0f);
-                }
 
-                if (*temp_iz < Pa->PMLz + 5)
+        ofstream fout("True0.txt");
+        ofstream fout1("CurrVp0.txt");
+        for(int iz = 0; iz < block_z; ++iz)
+        {
+            for(int iy = 0; iy < block_y; ++iy)
+            {
+                for(int ix = 0; ix < block_x; ++ix)
                 {
-                    ip->CurrVp[iz * block_y * block_x + iy * block_x + ix] = powf(2000.0f, 2.0f);
-                }
-                else if (*temp_iz <= Pa->PMLz + Pa->Nz)
-                {
-                    ip->CurrVp[iz * block_y * block_x + iy * block_x + ix] = powf((2000.0f + 2000.0f * (*temp_iz - Pa->PMLz - 5) / (Pa->Nz - 5)), 2.0f);
-                }
-                else
-                {
-                    ip->CurrVp[iz * block_y * block_x + iy * block_x + ix] = powf(4000.0f, 2.0f);
+                    fout << *(ip->TrueVp + iz * block_y * block_x + iy * block_x + ix) << " ";
+                    fout1 << *(ip->CurrVp + iz * block_y * block_x + iy * block_x + ix) << " ";
                 }
             }
         }
+        fout.flush();
+        fout.close();
+
+        fout1.flush();
+        fout1.close();
     }
-    delete temp_iz;
+
+    if(rank == 1)
+    {
+        ofstream fout("True1.txt");
+        ofstream fout1("CurrVp1.txt");
+        for(int iz = 0; iz < block_z; ++iz)
+        {
+            for(int iy = 0; iy < block_y; ++iy)
+            {
+                for(int ix = 0; ix < block_x; ++ix)
+                {
+                    fout << *(ip->TrueVp + iz * block_y * block_x + iy * block_x + ix) << " ";
+                    fout1 << *(ip->CurrVp + iz * block_y * block_x + iy * block_x + ix) << " ";
+                }
+            }
+        }
+        fout.flush();
+        fout.close();
+
+        fout1.flush();
+        fout1.close();
+    }
+
+    if(rank == 2)
+    {
+        ofstream fout("True2.txt");
+        ofstream fout1("CurrVp2.txt");
+        for(int iz = 0; iz < block_z; ++iz)
+        {
+            for(int iy = 0; iy < block_y; ++iy)
+            {
+                for(int ix = 0; ix < block_x; ++ix)
+                {
+                    fout << *(ip->TrueVp + iz * block_y * block_x + iy * block_x + ix) << " ";
+                    fout1 << *(ip->CurrVp + iz * block_y * block_x + iy * block_x + ix) << " ";
+                }
+            }
+        }
+        fout.flush();
+        fout.close();
+
+        fout1.flush();
+        fout1.close();
+    }
+
+    if(rank == 3)
+    {/*cout << block_x << " " << block_y << " " << block_z << endl;*/
+        ofstream fout("True3.txt");
+        ofstream fout1("CurrVp3.txt");
+        for(int iz = 0; iz < block_z; ++iz)
+        {
+            for(int iy = 0; iy < block_y; ++iy)
+            {
+                for(int ix = 0; ix < block_x; ++ix)
+                {
+                    fout << *(ip->TrueVp + iz * block_y * block_x + iy * block_x + ix) << " ";
+                    fout1 << *(ip->CurrVp + iz * block_y * block_x + iy * block_x + ix) << " ";
+                }
+            }
+        }
+        fout.flush();
+        fout.close();
+
+        fout1.flush();
+        fout1.close();
+    }
+
+
+//    int *temp_iz = new int[1];
+//    for (uint iz = 0; iz < block_z; iz++)
+//    {
+//        for (uint iy = 0; iy < block_y; iy++)
+//        {
+//            for (uint ix = 0; ix < block_x; ix++)
+//            {
+//                *temp_iz = iz + indexmin_z;
+//                if (*temp_iz < Pa->PMLz + (uint)(Pa->Nz / 2))
+//                {
+//                    ip->TrueVp[iz * block_y * block_x + iy * block_x + ix] = powf(2000.0f, 2.0f);
+//                }
+//                else
+//                {
+//                    ip->TrueVp[iz * block_y * block_x + iy * block_x + ix] = powf(4000.0f, 2.0f);
+//                }
+
+//                if (*temp_iz < Pa->PMLz + 5)
+//                {
+//                    ip->CurrVp[iz * block_y * block_x + iy * block_x + ix] = powf(2000.0f, 2.0f);
+//                }
+//                else if (*temp_iz <= Pa->PMLz + Pa->Nz)
+//                {
+//                    ip->CurrVp[iz * block_y * block_x + iy * block_x + ix] = powf((2000.0f + 2000.0f * (*temp_iz - Pa->PMLz - 5) / (Pa->Nz - 5)), 2.0f);
+//                }
+//                else
+//                {
+//                    ip->CurrVp[iz * block_y * block_x + iy * block_x + ix] = powf(4000.0f, 2.0f);
+//                }
+//            }
+//        }
+//    }
+//    delete temp_iz;
 
     // 全局变量
     CPUVs *plan;
@@ -234,7 +324,7 @@ int main(int argc, char ** argv)
     }
 //    MPI_Barrier(MPI_COMM_WORLD);
 //    if(rank == ROOT_ID)
-//    cout << "now3" <<endl;
+    cout << "now3" <<endl;
 
 
     // 给全局变量开辟空间
@@ -342,8 +432,8 @@ int main(int argc, char ** argv)
         if(rank == ROOT_ID)
         {
             // 求取梯度
-//            cout << "\n\tDoing the " << It << "th iteration" << endl;
-//            cout << "\tCalculating the Gradient..." << endl;
+            cout << "\n\tDoing the " << It << "th iteration" << endl;
+            cout << "\tCalculating the Gradient..." << endl;
 
             fout << "\n\tDoing the " << It << "th iteration" << endl;
             fout << "\tCalculating the Gradient..." << endl;
@@ -362,9 +452,9 @@ int main(int argc, char ** argv)
         MPI_Barrier(MPI_COMM_WORLD);
         if(rank == ROOT_ID)
         {
-//            cout << "\tObjective function value:\t" << ip->ObjIter[It] << endl;
-//            cout << "\tStep length:\t" << ip->Alpha << endl;
-//            cout << "\tThe " << It << "th iteration used " << duration / CLOCKS_PER_SEC << "s" << endl;
+            cout << "\tObjective function value:\t" << ip->ObjIter[It] << endl;
+            cout << "\tStep length:\t" << ip->Alpha << endl;
+            cout << "\tThe " << It << "th iteration used " << duration / CLOCKS_PER_SEC << "s" << endl;
 
             fout << "\tObjective function value:\t" << ip->ObjIter[It] << endl;
             fout << "\tStep length:\t" << ip->Alpha << endl;
