@@ -14,11 +14,12 @@
 #ifndef __RWSGY_H__
 #define __RWSGY_H__
 
+#include "mpi.h"
+
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <mpi.h>
 #include "Partition.h"
 
 #define     ROOT_ID     0

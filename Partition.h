@@ -9,7 +9,6 @@
 #include <fstream>
 #include <limits.h>
 #include <stddef.h>
-#include <tuple>
 using namespace std;
 
 
@@ -182,8 +181,8 @@ private:
     H_Border h_VW;
     H_Border h_Vp;
 
-    vector<tuple<uint, uint, uint>> shot;
-    vector<tuple<uint, uint, uint>> rl;
+    vector<vector<uint> > shot;
+    vector<vector<uint> > rl;
     uint RL_beginnum;
     uint RL_endnum;
 
@@ -274,11 +273,11 @@ public:
     void seth_Vp_border(AFDP3D Pa);
 
     uint getShot_num() const;
-    vector<tuple<uint, uint, uint>> getShot() const;
+    vector<vector<uint> > getShot() const;
 
     void setRL(const IP *ip, const AFDP3D *Pa);
     uint getRL_num() const;
-    vector<tuple<uint, uint, uint>> getRL() const;
+    vector<vector<uint> > getRL() const;
     uint getRL_beginnum() const;
     uint getRL_endnum() const;
 

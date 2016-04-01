@@ -173,94 +173,94 @@ int main(int argc, char ** argv)
     ReadData(TrueVp, ip->TrueVp, pt, 0);
     ReadData(InitVp, ip->CurrVp, pt, 0);
 
-    if(rank == 0)
-    {
+//    if(rank == 0)
+//    {
 
-        ofstream fout("True0.txt");
-        ofstream fout1("CurrVp0.txt");
-        for(int iz = 0; iz < block_z; ++iz)
-        {
-            for(int iy = 0; iy < block_y; ++iy)
-            {
-                for(int ix = 0; ix < block_x; ++ix)
-                {
-                    fout << *(ip->TrueVp + iz * block_y * block_x + iy * block_x + ix) << " ";
-                    fout1 << *(ip->CurrVp + iz * block_y * block_x + iy * block_x + ix) << " ";
-                }
-            }
-        }
-        fout.flush();
-        fout.close();
+//        ofstream fout("True0.txt");
+//        ofstream fout1("CurrVp0.txt");
+//        for(int iz = 0; iz < block_z; ++iz)
+//        {
+//            for(int iy = 0; iy < block_y; ++iy)
+//            {
+//                for(int ix = 0; ix < block_x; ++ix)
+//                {
+//                    fout << *(ip->TrueVp + iz * block_y * block_x + iy * block_x + ix) << " ";
+//                    fout1 << *(ip->CurrVp + iz * block_y * block_x + iy * block_x + ix) << " ";
+//                }
+//            }
+//        }
+//        fout.flush();
+//        fout.close();
 
-        fout1.flush();
-        fout1.close();
-    }
+//        fout1.flush();
+//        fout1.close();
+//    }
 
-    if(rank == 1)
-    {
-        ofstream fout("True1.txt");
-        ofstream fout1("CurrVp1.txt");
-        for(int iz = 0; iz < block_z; ++iz)
-        {
-            for(int iy = 0; iy < block_y; ++iy)
-            {
-                for(int ix = 0; ix < block_x; ++ix)
-                {
-                    fout << *(ip->TrueVp + iz * block_y * block_x + iy * block_x + ix) << " ";
-                    fout1 << *(ip->CurrVp + iz * block_y * block_x + iy * block_x + ix) << " ";
-                }
-            }
-        }
-        fout.flush();
-        fout.close();
+//    if(rank == 1)
+//    {
+//        ofstream fout("True1.txt");
+//        ofstream fout1("CurrVp1.txt");
+//        for(int iz = 0; iz < block_z; ++iz)
+//        {
+//            for(int iy = 0; iy < block_y; ++iy)
+//            {
+//                for(int ix = 0; ix < block_x; ++ix)
+//                {
+//                    fout << *(ip->TrueVp + iz * block_y * block_x + iy * block_x + ix) << " ";
+//                    fout1 << *(ip->CurrVp + iz * block_y * block_x + iy * block_x + ix) << " ";
+//                }
+//            }
+//        }
+//        fout.flush();
+//        fout.close();
 
-        fout1.flush();
-        fout1.close();
-    }
+//        fout1.flush();
+//        fout1.close();
+//    }
 
-    if(rank == 2)
-    {
-        ofstream fout("True2.txt");
-        ofstream fout1("CurrVp2.txt");
-        for(int iz = 0; iz < block_z; ++iz)
-        {
-            for(int iy = 0; iy < block_y; ++iy)
-            {
-                for(int ix = 0; ix < block_x; ++ix)
-                {
-                    fout << *(ip->TrueVp + iz * block_y * block_x + iy * block_x + ix) << " ";
-                    fout1 << *(ip->CurrVp + iz * block_y * block_x + iy * block_x + ix) << " ";
-                }
-            }
-        }
-        fout.flush();
-        fout.close();
+//    if(rank == 2)
+//    {
+//        ofstream fout("True2.txt");
+//        ofstream fout1("CurrVp2.txt");
+//        for(int iz = 0; iz < block_z; ++iz)
+//        {
+//            for(int iy = 0; iy < block_y; ++iy)
+//            {
+//                for(int ix = 0; ix < block_x; ++ix)
+//                {
+//                    fout << *(ip->TrueVp + iz * block_y * block_x + iy * block_x + ix) << " ";
+//                    fout1 << *(ip->CurrVp + iz * block_y * block_x + iy * block_x + ix) << " ";
+//                }
+//            }
+//        }
+//        fout.flush();
+//        fout.close();
 
-        fout1.flush();
-        fout1.close();
-    }
+//        fout1.flush();
+//        fout1.close();
+//    }
 
-    if(rank == 3)
-    {/*cout << block_x << " " << block_y << " " << block_z << endl;*/
-        ofstream fout("True3.txt");
-        ofstream fout1("CurrVp3.txt");
-        for(int iz = 0; iz < block_z; ++iz)
-        {
-            for(int iy = 0; iy < block_y; ++iy)
-            {
-                for(int ix = 0; ix < block_x; ++ix)
-                {
-                    fout << *(ip->TrueVp + iz * block_y * block_x + iy * block_x + ix) << " ";
-                    fout1 << *(ip->CurrVp + iz * block_y * block_x + iy * block_x + ix) << " ";
-                }
-            }
-        }
-        fout.flush();
-        fout.close();
+//    if(rank == 3)
+//    {/*cout << block_x << " " << block_y << " " << block_z << endl;*/
+//        ofstream fout("True3.txt");
+//        ofstream fout1("CurrVp3.txt");
+//        for(int iz = 0; iz < block_z; ++iz)
+//        {
+//            for(int iy = 0; iy < block_y; ++iy)
+//            {
+//                for(int ix = 0; ix < block_x; ++ix)
+//                {
+//                    fout << *(ip->TrueVp + iz * block_y * block_x + iy * block_x + ix) << " ";
+//                    fout1 << *(ip->CurrVp + iz * block_y * block_x + iy * block_x + ix) << " ";
+//                }
+//            }
+//        }
+//        fout.flush();
+//        fout.close();
 
-        fout1.flush();
-        fout1.close();
-    }
+//        fout1.flush();
+//        fout1.close();
+//    }
 
 
 //    int *temp_iz = new int[1];
@@ -324,7 +324,7 @@ int main(int argc, char ** argv)
     }
 //    MPI_Barrier(MPI_COMM_WORLD);
 //    if(rank == ROOT_ID)
-    cout << "now3" <<endl;
+//    cout << "now3" <<endl;
 
 
     // 给全局变量开辟空间
@@ -341,35 +341,35 @@ int main(int argc, char ** argv)
 
     if(rank == ROOT_ID)
     {
-//        cout << "********************************************************************************************" << endl;
-//        cout << "(" << shot_x << " * " << shot_y << " * " << shot_z << ") * " << ip->ShotN << endl;
-//        cout << "********************************************************************************************" << endl;
-//        cout << "Doing 3D Hybrid Full Waveform Inversion ..." << endl;
-//        cout << "Time domain Forward modeling and frequency domain inversion" << endl;
-//        cout << "Parameters of Inversion are as follows:" << endl;
-//        cout << "\tNx = " << Pa->Nx << endl;
-//        cout << "\tNy = " << Pa->Ny << endl;
-//        cout << "\tNz = " << Pa->Nz << endl;
-//        cout << "\tdx = " << Pa->dx << "m" << endl;
-//        cout << "\tdy = " << Pa->dy << "m" << endl;
-//        cout << "\tdz = " << Pa->dz << "m" << endl;
-//        cout << "\tNt = " << Pa->Nt << endl;
-//        cout << "\tdt = " << Pa->dt << "s" << endl;
-//        cout << "\tNpml = " << Pa->PMLx << endl;
-//    #ifndef _FROM_TXT_
-//        cout << "\tf0 = " << Pa->f0 << endl;
-//    #endif
-//        cout << "\tNshot = " << ip->ShotN << endl;
-//        cout << "\tIteration number = " << ip->IterN << endl;
-//        cout << "\tUsing " << ip->FreqN << " frequencies" << endl;
-//        cout << "\tf_min = " << (StartFreq / 2.0f / PI) << "Hz" << endl;
-//        cout << "\tf_int = " << (InterFreq / 2.0f / PI) << "Hz" << endl;
-//        cout << "\tf_max = " << ((StartFreq + (ip->FreqN - 1) * InterFreq) / (2.0f * PI)) << "Hz" << endl;
-//        //cout << "---------------------------------------------------------" << endl;
-//    #ifdef _FROM_SGY_
-//        cout << "\tReading the wavelet from sgy" << endl;
-//    #endif
-//        cout << "********************************************************************************************" << endl;
+        cout << "********************************************************************************************" << endl;
+        cout << "(" << shot_x << " * " << shot_y << " * " << shot_z << ") * " << ip->ShotN << endl;
+        cout << "********************************************************************************************" << endl;
+        cout << "Doing 3D Hybrid Full Waveform Inversion ..." << endl;
+        cout << "Time domain Forward modeling and frequency domain inversion" << endl;
+        cout << "Parameters of Inversion are as follows:" << endl;
+        cout << "\tNx = " << Pa->Nx << endl;
+        cout << "\tNy = " << Pa->Ny << endl;
+        cout << "\tNz = " << Pa->Nz << endl;
+        cout << "\tdx = " << Pa->dx << "m" << endl;
+        cout << "\tdy = " << Pa->dy << "m" << endl;
+        cout << "\tdz = " << Pa->dz << "m" << endl;
+        cout << "\tNt = " << Pa->Nt << endl;
+        cout << "\tdt = " << Pa->dt << "s" << endl;
+        cout << "\tNpml = " << Pa->PMLx << endl;
+    #ifndef _FROM_TXT_
+        cout << "\tf0 = " << Pa->f0 << endl;
+    #endif
+        cout << "\tNshot = " << ip->ShotN << endl;
+        cout << "\tIteration number = " << ip->IterN << endl;
+        cout << "\tUsing " << ip->FreqN << " frequencies" << endl;
+        cout << "\tf_min = " << (StartFreq / 2.0f / PI) << "Hz" << endl;
+        cout << "\tf_int = " << (InterFreq / 2.0f / PI) << "Hz" << endl;
+        cout << "\tf_max = " << ((StartFreq + (ip->FreqN - 1) * InterFreq) / (2.0f * PI)) << "Hz" << endl;
+        //cout << "---------------------------------------------------------" << endl;
+    #ifdef _FROM_SGY_
+        cout << "\tReading the wavelet from sgy" << endl;
+    #endif
+        cout << "********************************************************************************************" << endl;
 
         fout << "********************************************************************************************" << endl;
         fout << "(" << shot_x << " * " << shot_y << " * " << shot_z << ") * " << ip->ShotN << endl;

@@ -1301,13 +1301,13 @@ void StepShotGather(AFDP3D Pa,
     H_Border temph_U = pt.geth_U();
 
     uint rn = pt.getRL_num();
-    vector<tuple<uint, uint, uint>> vec = pt.getRL();
-    vector<tuple<uint, uint, uint>>::iterator begin = vec.begin();
-    tuple<uint, uint, uint> temp;
+    vector<vector<uint> > vec = pt.getRL();
+    vector<vector<uint> >::iterator begin = vec.begin();
+    vector<uint> temp;
     for (uint ir = 0; ir < rn; ir++)
     {
         temp = *(begin + ir);
-        id = (get<2>(temp) + temph_U.topborder) * temph_U.length_y * temph_U.length_x + (get<1>(temp) + temph_U.backborder) * temph_U.length_x + get<0>(temp) + temph_U.leftborder;
+        id = (temp[2] + temph_U.topborder) * temph_U.length_y * temph_U.length_x + (temp[1] + temph_U.backborder) * temph_U.length_x + temp[0] + temph_U.leftborder;
         //id = h_re[ir].Rz * nny * nnx + h_re[ir].Ry * nnx + h_re[ir].Rx;
         h_SG[ir * Pa.Nt + nstep] = h_U[id];
     }
@@ -1365,69 +1365,69 @@ void StepResidualConj(AFDP3D Pa,
 {
     uint id = 0;
 
-    ofstream fout;
-    if(pt.getrank() == 0)
-    {
-        fout.open("h_fft_in00.txt", ios_base::out);
-    }
-    else if(pt.getrank() == 1)
-    {
-        fout.open("h_fft_in01.txt", ios_base::out);
-    }
+//    ofstream fout;
+//    if(pt.getrank() == 0)
+//    {
+//        fout.open("h_fft_in00.txt", ios_base::out);
+//    }
+//    else if(pt.getrank() == 1)
+//    {
+//        fout.open("h_fft_in01.txt", ios_base::out);
+//    }
 
-    ofstream fout1;
-    if(pt.getrank() == 0)
-    {
-        fout1.open("h_fft_in10.txt", ios_base::out);
-    }
-    else if(pt.getrank() == 1)
-    {
-        fout1.open("h_fft_in11.txt", ios_base::out);
-    }
-
-
-
-    ofstream fout2;
-    if(pt.getrank() == 0)
-    {
-        fout2.open("h_fft_out00.txt", ios_base::out);
-    }
-    else if(pt.getrank() == 1)
-    {
-        fout2.open("h_fft_out01.txt", ios_base::out);
-    }
-
-    ofstream fout3;
-    if(pt.getrank() == 0)
-    {
-        fout3.open("h_fft_out10.txt", ios_base::out);
-    }
-    else if(pt.getrank() == 1)
-    {
-        fout3.open("h_fft_out11.txt", ios_base::out);
-    }
+//    ofstream fout1;
+//    if(pt.getrank() == 0)
+//    {
+//        fout1.open("h_fft_in10.txt", ios_base::out);
+//    }
+//    else if(pt.getrank() == 1)
+//    {
+//        fout1.open("h_fft_in11.txt", ios_base::out);
+//    }
 
 
 
-    ofstream fout4;
-    if(pt.getrank() == 0)
-    {
-        fout4.open("h_fft_in20.txt", ios_base::out);
-    }
-    else if(pt.getrank() == 1)
-    {
-        fout4.open("h_fft_in21.txt", ios_base::out);
-    }
+//    ofstream fout2;
+//    if(pt.getrank() == 0)
+//    {
+//        fout2.open("h_fft_out00.txt", ios_base::out);
+//    }
+//    else if(pt.getrank() == 1)
+//    {
+//        fout2.open("h_fft_out01.txt", ios_base::out);
+//    }
 
-    ofstream fout5;
-    if(pt.getrank() == 0)
-    {
-        fout5.open("h_fft_out20.txt", ios_base::out);
-    }
-    else if(pt.getrank() == 1)
-    {
-        fout5.open("h_fft_out21.txt", ios_base::out);
-    }
+//    ofstream fout3;
+//    if(pt.getrank() == 0)
+//    {
+//        fout3.open("h_fft_out10.txt", ios_base::out);
+//    }
+//    else if(pt.getrank() == 1)
+//    {
+//        fout3.open("h_fft_out11.txt", ios_base::out);
+//    }
+
+
+
+//    ofstream fout4;
+//    if(pt.getrank() == 0)
+//    {
+//        fout4.open("h_fft_in20.txt", ios_base::out);
+//    }
+//    else if(pt.getrank() == 1)
+//    {
+//        fout4.open("h_fft_in21.txt", ios_base::out);
+//    }
+
+//    ofstream fout5;
+//    if(pt.getrank() == 0)
+//    {
+//        fout5.open("h_fft_out20.txt", ios_base::out);
+//    }
+//    else if(pt.getrank() == 1)
+//    {
+//        fout5.open("h_fft_out21.txt", ios_base::out);
+//    }
 
 
 //    ofstream fout1;
@@ -1458,22 +1458,22 @@ void StepResidualConj(AFDP3D Pa,
             plan->fft_in[m][1] = 0.0f;
         }
 
-        if(pt.getrank() == 0)
-        {
-            for(int m = 0; m < Pa.Nt; ++m)
-            {
-                fout << plan->fft_in[m][0] << endl;
-            }
+//        if(pt.getrank() == 0)
+//        {
+//            for(int m = 0; m < Pa.Nt; ++m)
+//            {
+//                fout << plan->fft_in[m][0] << endl;
+//            }
 
-        }
+//        }
 
-        if(pt.getrank() == 1)
-        {
-            for(int m = 0; m < Pa.Nt; ++m)
-            {
-                fout << plan->fft_in[m][0] << endl;
-            }
-        }
+//        if(pt.getrank() == 1)
+//        {
+//            for(int m = 0; m < Pa.Nt; ++m)
+//            {
+//                fout << plan->fft_in[m][0] << endl;
+//            }
+//        }
 
         fftw_plan p = fftw_plan_dft_1d(Pa.Nt,
             plan->fft_in,
@@ -1484,42 +1484,42 @@ void StepResidualConj(AFDP3D Pa,
         fftw_execute(p);
         fftw_destroy_plan(p);
 
-        if(pt.getrank() == 0)
-        {
-            for(int m = 0; m < Pa.Nt; ++m)
-            {
-                fout1 << plan->fft_in[m][0] << endl;
-            }
-            //fout1 << plan->fft_in[n][0] << endl;
-        }
+//        if(pt.getrank() == 0)
+//        {
+//            for(int m = 0; m < Pa.Nt; ++m)
+//            {
+//                fout1 << plan->fft_in[m][0] << endl;
+//            }
+//            //fout1 << plan->fft_in[n][0] << endl;
+//        }
 
-        if(pt.getrank() == 1)
-        {
-            for(int m = 0; m < Pa.Nt; ++m)
-            {
-                fout1 << plan->fft_in[m][0] << endl;
-            }
+//        if(pt.getrank() == 1)
+//        {
+//            for(int m = 0; m < Pa.Nt; ++m)
+//            {
+//                fout1 << plan->fft_in[m][0] << endl;
+//            }
 
-        }
+//        }
 
 
-        if(pt.getrank() == 0)
-        {
-            for(int m = 0; m < Pa.Nt; ++m)
-            {
-                fout2 << plan->fft_out[m][0] << endl;
-            }
-            //fout2 << plan->fft_out[n][0] << endl;
-        }
+//        if(pt.getrank() == 0)
+//        {
+//            for(int m = 0; m < Pa.Nt; ++m)
+//            {
+//                fout2 << plan->fft_out[m][0] << endl;
+//            }
+//            //fout2 << plan->fft_out[n][0] << endl;
+//        }
 
-        if(pt.getrank() == 1)
-        {
-            for(int m = 0; m < Pa.Nt; ++m)
-            {
-                fout2 << plan->fft_out[m][0] << endl;
-            }
-            //fout2 << plan->fft_out[n][0] << endl;
-        }
+//        if(pt.getrank() == 1)
+//        {
+//            for(int m = 0; m < Pa.Nt; ++m)
+//            {
+//                fout2 << plan->fft_out[m][0] << endl;
+//            }
+//            //fout2 << plan->fft_out[n][0] << endl;
+//        }
 
         // 对fft的结果求共轭
         for (uint m = 0; m < Pa.Nt; m++)
@@ -1529,23 +1529,23 @@ void StepResidualConj(AFDP3D Pa,
         }
 
 
-        if(pt.getrank() == 0)
-        {
-            for(int m = 0; m < Pa.Nt; ++m)
-            {
-                fout3 << plan->fft_out[m][0] << endl;
-            }
+//        if(pt.getrank() == 0)
+//        {
+//            for(int m = 0; m < Pa.Nt; ++m)
+//            {
+//                fout3 << plan->fft_out[m][0] << endl;
+//            }
 
-        }
+//        }
 
-        if(pt.getrank() == 1)
-        {
-            for(int m = 0; m < Pa.Nt; ++m)
-            {
-                fout3 << plan->fft_out[m][0] << endl;
-            }
+//        if(pt.getrank() == 1)
+//        {
+//            for(int m = 0; m < Pa.Nt; ++m)
+//            {
+//                fout3 << plan->fft_out[m][0] << endl;
+//            }
 
-        }
+//        }
 
 
 
@@ -1559,40 +1559,40 @@ void StepResidualConj(AFDP3D Pa,
         fftw_execute(pp);
 
 
-        if(pt.getrank() == 0)
-        {
-            for(int m = 0; m < Pa.Nt; ++m)
-            {
-                fout4 << plan->fft_in[m][0] << endl;
-            }
+//        if(pt.getrank() == 0)
+//        {
+//            for(int m = 0; m < Pa.Nt; ++m)
+//            {
+//                fout4 << plan->fft_in[m][0] << endl;
+//            }
 
-        }
+//        }
 
-        if(pt.getrank() == 1)
-        {
-            for(int m = 0; m < Pa.Nt; ++m)
-            {
-                fout4 << plan->fft_in[m][0] << endl;
-            }
+//        if(pt.getrank() == 1)
+//        {
+//            for(int m = 0; m < Pa.Nt; ++m)
+//            {
+//                fout4 << plan->fft_in[m][0] << endl;
+//            }
 
-        }
+//        }
 
 
-        if(pt.getrank() == 0)
-        {
-            for(int m = 0; m < Pa.Nt; ++m)
-            {
-                fout5 << plan->fft_out[m][0] << endl;
-            }
-        }
+//        if(pt.getrank() == 0)
+//        {
+//            for(int m = 0; m < Pa.Nt; ++m)
+//            {
+//                fout5 << plan->fft_out[m][0] << endl;
+//            }
+//        }
 
-        if(pt.getrank() == 1)
-        {
-            for(int m = 0; m < Pa.Nt; ++m)
-            {
-                fout5 << plan->fft_out[m][0] << endl;
-            }
-        }
+//        if(pt.getrank() == 1)
+//        {
+//            for(int m = 0; m < Pa.Nt; ++m)
+//            {
+//                fout5 << plan->fft_out[m][0] << endl;
+//            }
+//        }
 
 
         for (uint m = 0; m < Pa.Nt; m++)
@@ -1881,9 +1881,9 @@ void AddResidual(AFDP3D Pa,
     uint indexmin_y = pt.getindexmin_y();
     uint indexmin_z = pt.getindexmin_z();
 
-    vector<tuple<uint, uint, uint>> vec = pt.getRL();
-    tuple<uint, uint, uint> temp;
-    vector<tuple<uint, uint, uint>>::iterator begin = vec.begin();
+    vector<vector<uint> > vec = pt.getRL();
+    vector<uint> temp;
+    vector<vector<uint> >::iterator begin = vec.begin();
 
 
     for(uint ir = 0; ir < vec.size(); ++ir)
@@ -1892,35 +1892,35 @@ void AddResidual(AFDP3D Pa,
 
         //if(pt.getrank() == 0)
         //fouth_u << get<0>(temp) << " " << get<1>(temp) << " " << get<2>(temp) << endl;
-        h_U_r[get<2>(temp) * block_y * block_x + get<1>(temp) * block_x + get<0>(temp)] += -1.0f * h_ResWF[ir * Pa.Nt + nstep]
-                * (Pa.dt * Pa.dt * h_Vp[(get<2>(temp) + temph_Vp.topborder) * temph_Vp.length_y * temph_Vp.length_x + (get<1>(temp) + temph_Vp.backborder) * temph_Vp.length_x + get<0>(temp) + temph_Vp.leftborder]);
+        h_U_r[temp[2] * block_y * block_x + temp[1] * block_x + temp[0]] += -1.0f * h_ResWF[ir * Pa.Nt + nstep]
+                * (Pa.dt * Pa.dt * h_Vp[(temp[2] + temph_Vp.topborder) * temph_Vp.length_y * temph_Vp.length_x + (temp[1] + temph_Vp.backborder) * temph_Vp.length_x + temp[0] + temph_Vp.leftborder]);
 
 
     }
 
 
-begin = vec.begin();
-    if(pt.getrank() == 0 && it == 1)
-    {
-        ofstream fout("h_U_r00.txt");
-        for(int ir = 0; ir < Rn; ++ir)
-        {
-            temp = *(begin + ir);
-            fout << get<2>(temp) + indexmin_z << " " << get<1>(temp) + indexmin_y << " " << get<0>(temp) + indexmin_x << endl;
-            fout << h_U_r[get<2>(temp) * block_y * block_x + get<1>(temp) * block_x + get<0>(temp)] << " ";
-        }
-    }
+//    begin = vec.begin();
+//    if(pt.getrank() == 0 && it == 1)
+//    {
+//        ofstream fout("h_U_r00.txt");
+//        for(int ir = 0; ir < Rn; ++ir)
+//        {
+//            temp = *(begin + ir);
+//            fout << get<2>(temp) + indexmin_z << " " << get<1>(temp) + indexmin_y << " " << get<0>(temp) + indexmin_x << endl;
+//            fout << h_U_r[get<2>(temp) * block_y * block_x + get<1>(temp) * block_x + get<0>(temp)] << " ";
+//        }
+//    }
 
-    if(pt.getrank() == 1 && it == 1)
-    {
-        ofstream fout("h_U_r01.txt");
-        for(int ir = 0; ir < Rn; ++ir)
-        {
-            temp = *(begin + ir);
-            fout << get<2>(temp) + indexmin_z << " " << get<1>(temp) + indexmin_y << " " << get<0>(temp) + indexmin_x << endl;
-            fout << h_U_r[get<2>(temp) * block_y * block_x + get<1>(temp) * block_x + get<0>(temp)] << " ";
-        }
-    }
+//    if(pt.getrank() == 1 && it == 1)
+//    {
+//        ofstream fout("h_U_r01.txt");
+//        for(int ir = 0; ir < Rn; ++ir)
+//        {
+//            temp = *(begin + ir);
+//            fout << get<2>(temp) + indexmin_z << " " << get<1>(temp) + indexmin_y << " " << get<0>(temp) + indexmin_x << endl;
+//            fout << h_U_r[get<2>(temp) * block_y * block_x + get<1>(temp) * block_x + get<0>(temp)] << " ";
+//        }
+//    }
 
 //    for (uint ir = 0; ir < Rn; ir++)
 //    {
@@ -2414,30 +2414,30 @@ void CalTrueWF(AFDP3D Pa,
                 Pa.Nt * RL_num * sizeof(float));
         }
 
-        if(rank == 0)
-        {
-            ofstream fout("sgs_t00.txt");
-            for(int i = 0; i < RL_num; ++i)
-            {
-                for(int j = 0; j < Pa.Nt; ++j)
-                {
-                    fout << sgs_t[i * Pa.Nt + j] << " ";
-                }
-                fout << endl;
-            }
-        }
-        if(rank == 1)
-        {
-            ofstream fout("sgs_t01.txt");
-            for(int i = 0; i < RL_num; ++i)
-            {
-                for(int j = 0; j < Pa.Nt; ++j)
-                {
-                    fout << sgs_t[i * Pa.Nt + j] << " ";
-                }
-                fout << endl;
-            }
-        }
+//        if(rank == 0)
+//        {
+//            ofstream fout("sgs_t00.txt");
+//            for(int i = 0; i < RL_num; ++i)
+//            {
+//                for(int j = 0; j < Pa.Nt; ++j)
+//                {
+//                    fout << sgs_t[i * Pa.Nt + j] << " ";
+//                }
+//                fout << endl;
+//            }
+//        }
+//        if(rank == 1)
+//        {
+//            ofstream fout("sgs_t01.txt");
+//            for(int i = 0; i < RL_num; ++i)
+//            {
+//                for(int j = 0; j < Pa.Nt; ++j)
+//                {
+//                    fout << sgs_t[i * Pa.Nt + j] << " ";
+//                }
+//                fout << endl;
+//            }
+//        }
 
     //}//shotN
 
@@ -2674,127 +2674,127 @@ void CalGrad(AFDP3D Pa,
         }
 
 
-        if(RL_num)
-        {
-            if(pt.getrank() == 0)
-            {
-                ofstream fout_h("h_CurrWF00.txt");
-                for(int i = 0; i < RL_num; ++i)
-                {
-                    for(int j = 0; j < Pa.Nt; ++j)
-                    {
-                        fout_h << *(plan->h_CurrWF + i * Pa.Nt + j) << " ";
-                    }
-                }
-                fout_h << endl;
-            }
+//        if(RL_num)
+//        {
+//            if(pt.getrank() == 0)
+//            {
+//                ofstream fout_h("h_CurrWF00.txt");
+//                for(int i = 0; i < RL_num; ++i)
+//                {
+//                    for(int j = 0; j < Pa.Nt; ++j)
+//                    {
+//                        fout_h << *(plan->h_CurrWF + i * Pa.Nt + j) << " ";
+//                    }
+//                }
+//                fout_h << endl;
+//            }
 
-            if(pt.getrank() == 1)
-            {
-                ofstream fout_h("h_CurrWF01.txt");
-                for(int i = 0; i < RL_num; ++i)
-                {
-                    for(int j = 0; j < Pa.Nt; ++j)
-                    {
-                        fout_h << *(plan->h_CurrWF + i * Pa.Nt + j) << " ";
-                    }
-                }
-                fout_h << endl;
-            }
-        }
+//            if(pt.getrank() == 1)
+//            {
+//                ofstream fout_h("h_CurrWF01.txt");
+//                for(int i = 0; i < RL_num; ++i)
+//                {
+//                    for(int j = 0; j < Pa.Nt; ++j)
+//                    {
+//                        fout_h << *(plan->h_CurrWF + i * Pa.Nt + j) << " ";
+//                    }
+//                }
+//                fout_h << endl;
+//            }
+//        }
 
-        if(RL_num)
-        {
-            if(pt.getrank() == 0)
-            {
-                ofstream fout_h("h_TrueWF00.txt");
-                for(int i = 0; i < RL_num; ++i)
-                {
-                    for(int j = 0; j < Pa.Nt; ++j)
-                    {
-                        fout_h << *(plan->h_TrueWF + i * Pa.Nt + j) << " ";
-                    }
-                }
-                fout_h << endl;
-            }
+//        if(RL_num)
+//        {
+//            if(pt.getrank() == 0)
+//            {
+//                ofstream fout_h("h_TrueWF00.txt");
+//                for(int i = 0; i < RL_num; ++i)
+//                {
+//                    for(int j = 0; j < Pa.Nt; ++j)
+//                    {
+//                        fout_h << *(plan->h_TrueWF + i * Pa.Nt + j) << " ";
+//                    }
+//                }
+//                fout_h << endl;
+//            }
 
-            if(pt.getrank() == 1)
-            {
-                ofstream fout_h("h_TrueWF01.txt");
-                for(int i = 0; i < RL_num; ++i)
-                {
-                    for(int j = 0; j < Pa.Nt; ++j)
-                    {
-                        fout_h << *(plan->h_TrueWF + i * Pa.Nt + j) << " ";
-                    }
-                }
-                fout_h << endl;
-            }
-        }
-
-
-        if(RL_num)
-        {
-            if(pt.getrank() == 0)
-            {
-                ofstream fout_h("h_ResWF0.txt");
-                for(int i = 0; i < RL_num; ++i)
-                {
-                    for(int j = 0; j < Pa.Nt; ++j)
-                    {
-                        fout_h << *(plan->h_ResWF + i * Pa.Nt + j) << " ";
-                    }
-                }
-                fout_h << endl;
-            }
-
-            if(pt.getrank() == 1)
-            {
-                ofstream fout_h("h_ResWF1.txt");
-                for(int i = 0; i < RL_num; ++i)
-                {
-                    for(int j = 0; j < Pa.Nt; ++j)
-                    {
-                        fout_h << *(plan->h_ResWF + i * Pa.Nt + j) << " ";
-                    }
-                }
-                fout_h << endl;
-            }
-        }
+//            if(pt.getrank() == 1)
+//            {
+//                ofstream fout_h("h_TrueWF01.txt");
+//                for(int i = 0; i < RL_num; ++i)
+//                {
+//                    for(int j = 0; j < Pa.Nt; ++j)
+//                    {
+//                        fout_h << *(plan->h_TrueWF + i * Pa.Nt + j) << " ";
+//                    }
+//                }
+//                fout_h << endl;
+//            }
+//        }
 
 
+//        if(RL_num)
+//        {
+//            if(pt.getrank() == 0)
+//            {
+//                ofstream fout_h("h_ResWF0.txt");
+//                for(int i = 0; i < RL_num; ++i)
+//                {
+//                    for(int j = 0; j < Pa.Nt; ++j)
+//                    {
+//                        fout_h << *(plan->h_ResWF + i * Pa.Nt + j) << " ";
+//                    }
+//                }
+//                fout_h << endl;
+//            }
 
-        if(rank == 0)
-        {
-            ofstream fout_hvp("h_vp0.txt");
-            for(int iz = 0; iz < block_z; ++iz)
-            {
-                for(int iy = 0; iy < block_y; ++iy)
-                {
-                    for(int ix = 0; ix < block_x; ++ix)
-                    {
-                        fout_hvp << *(plan->h_Vp + (iz + temph_Vp.topborder) * temph_Vp.length_y * temph_Vp.length_x + (iy + temph_Vp.backborder) * temph_Vp.length_x + ix + temph_Vp.leftborder) << " ";
-                    }
-                }
-            }
-            fout_hvp << endl;
-        }
+//            if(pt.getrank() == 1)
+//            {
+//                ofstream fout_h("h_ResWF1.txt");
+//                for(int i = 0; i < RL_num; ++i)
+//                {
+//                    for(int j = 0; j < Pa.Nt; ++j)
+//                    {
+//                        fout_h << *(plan->h_ResWF + i * Pa.Nt + j) << " ";
+//                    }
+//                }
+//                fout_h << endl;
+//            }
+//        }
 
-        if(rank == 1)
-        {
-            ofstream fout_hvp("h_vp1.txt");
-            for(int iz = 0; iz < block_z; ++iz)
-            {
-                for(int iy = 0; iy < block_y; ++iy)
-                {
-                    for(int ix = 0; ix < block_x; ++ix)
-                    {
-                        fout_hvp << *(plan->h_Vp + (iz + temph_Vp.topborder) * temph_Vp.length_y * temph_Vp.length_x + (iy + temph_Vp.backborder) * temph_Vp.length_x + ix + temph_Vp.leftborder) << " ";
-                    }
-                }
-            }
-            fout_hvp << endl;
-        }
+
+
+//        if(rank == 0)
+//        {
+//            ofstream fout_hvp("h_vp0.txt");
+//            for(int iz = 0; iz < block_z; ++iz)
+//            {
+//                for(int iy = 0; iy < block_y; ++iy)
+//                {
+//                    for(int ix = 0; ix < block_x; ++ix)
+//                    {
+//                        fout_hvp << *(plan->h_Vp + (iz + temph_Vp.topborder) * temph_Vp.length_y * temph_Vp.length_x + (iy + temph_Vp.backborder) * temph_Vp.length_x + ix + temph_Vp.leftborder) << " ";
+//                    }
+//                }
+//            }
+//            fout_hvp << endl;
+//        }
+
+//        if(rank == 1)
+//        {
+//            ofstream fout_hvp("h_vp1.txt");
+//            for(int iz = 0; iz < block_z; ++iz)
+//            {
+//                for(int iy = 0; iy < block_y; ++iy)
+//                {
+//                    for(int ix = 0; ix < block_x; ++ix)
+//                    {
+//                        fout_hvp << *(plan->h_Vp + (iz + temph_Vp.topborder) * temph_Vp.length_y * temph_Vp.length_x + (iy + temph_Vp.backborder) * temph_Vp.length_x + ix + temph_Vp.leftborder) << " ";
+//                    }
+//                }
+//            }
+//            fout_hvp << endl;
+//        }
 
         // 残差反传，对时间的循环
         for (uint it = 0; it < Pa.Nt; it++)
@@ -2866,42 +2866,42 @@ void CalGrad(AFDP3D Pa,
                 plan->h_Bx, plan->h_By, plan->h_Bz,
                 plan->h_Vp, pt, it);
 
-            if(it == 1)
-            {
-                if(rank == 0)
-                {
-                    ofstream fout("h_U_next_r0.txt");
-                    ofstream fout1("h_U_now_r0.txt");
-                    for(int iz = 0; iz < block_z; ++iz)
-                    {
-                        for(int iy = 0; iy < block_y; ++iy)
-                        {
-                            for(int ix = 0; ix < block_x; ++ix)
-                            {
-                                fout << *(plan->h_U_next_r + iz * block_y * block_x + iy * block_x + ix) << " ";
-                                fout1 << *(plan->h_U_now_r + (iz + temph_U.topborder) * temph_U.length_y * temph_U.length_x + (iy + temph_U.backborder) * temph_U.length_x + ix + temph_U.leftborder) << " ";
-                            }
-                        }
-                    }
-                }
+//            if(it == 1)
+//            {
+//                if(rank == 0)
+//                {
+//                    ofstream fout("h_U_next_r0.txt");
+//                    ofstream fout1("h_U_now_r0.txt");
+//                    for(int iz = 0; iz < block_z; ++iz)
+//                    {
+//                        for(int iy = 0; iy < block_y; ++iy)
+//                        {
+//                            for(int ix = 0; ix < block_x; ++ix)
+//                            {
+//                                fout << *(plan->h_U_next_r + iz * block_y * block_x + iy * block_x + ix) << " ";
+//                                fout1 << *(plan->h_U_now_r + (iz + temph_U.topborder) * temph_U.length_y * temph_U.length_x + (iy + temph_U.backborder) * temph_U.length_x + ix + temph_U.leftborder) << " ";
+//                            }
+//                        }
+//                    }
+//                }
 
-                if(rank == 1)
-                {
-                    ofstream fout("h_U_next_r1.txt");
-                    ofstream fout1("h_U_now_r1.txt");
-                    for(int iz = 0; iz < block_z; ++iz)
-                    {
-                        for(int iy = 0; iy < block_y; ++iy)
-                        {
-                            for(int ix = 0; ix < block_x; ++ix)
-                            {
-                                fout << *(plan->h_U_next_r + iz * block_y * block_x + iy * block_x + ix) << " ";
-                                fout1 << *(plan->h_U_now_r + (iz + temph_U.topborder) * temph_U.length_y * temph_U.length_x + (iy + temph_U.backborder) * temph_U.length_x + ix + temph_U.leftborder) << " ";
-                            }
-                        }
-                    }
-                }
-            }
+//                if(rank == 1)
+//                {
+//                    ofstream fout("h_U_next_r1.txt");
+//                    ofstream fout1("h_U_now_r1.txt");
+//                    for(int iz = 0; iz < block_z; ++iz)
+//                    {
+//                        for(int iy = 0; iy < block_y; ++iy)
+//                        {
+//                            for(int ix = 0; ix < block_x; ++ix)
+//                            {
+//                                fout << *(plan->h_U_next_r + iz * block_y * block_x + iy * block_x + ix) << " ";
+//                                fout1 << *(plan->h_U_now_r + (iz + temph_U.topborder) * temph_U.length_y * temph_U.length_x + (iy + temph_U.backborder) * temph_U.length_x + ix + temph_U.leftborder) << " ";
+//                            }
+//                        }
+//                    }
+//                }
+//            }
 
             if(RL_num)
             {
@@ -2910,132 +2910,132 @@ void CalGrad(AFDP3D Pa,
                     plan->h_re, it, RL_num, plan->h_Vp, pt, it);
             }
 
-            if(it == 1)
-            {
-                if(rank == 0)
-                {
-                    ofstream fout("h_U_next_r00.txt");
-                    ofstream fout1("h_U_now_r00.txt");
-                    for(int iz = 0; iz < block_z; ++iz)
-                    {
-                        for(int iy = 0; iy < block_y; ++iy)
-                        {
-                            for(int ix = 0; ix < block_x; ++ix)
-                            {
-                                fout << *(plan->h_U_next_r + iz * block_y * block_x + iy * block_x + ix) << " ";
-                                fout1 << *(plan->h_U_now_r + (iz + temph_U.topborder) * temph_U.length_y * temph_U.length_x + (iy + temph_U.backborder) * temph_U.length_x + ix + temph_U.leftborder) << " ";
-                            }
-                        }
-                    }
-                }
+//            if(it == 1)
+//            {
+//                if(rank == 0)
+//                {
+//                    ofstream fout("h_U_next_r00.txt");
+//                    ofstream fout1("h_U_now_r00.txt");
+//                    for(int iz = 0; iz < block_z; ++iz)
+//                    {
+//                        for(int iy = 0; iy < block_y; ++iy)
+//                        {
+//                            for(int ix = 0; ix < block_x; ++ix)
+//                            {
+//                                fout << *(plan->h_U_next_r + iz * block_y * block_x + iy * block_x + ix) << " ";
+//                                fout1 << *(plan->h_U_now_r + (iz + temph_U.topborder) * temph_U.length_y * temph_U.length_x + (iy + temph_U.backborder) * temph_U.length_x + ix + temph_U.leftborder) << " ";
+//                            }
+//                        }
+//                    }
+//                }
 
-                if(rank == 1)
-                {
-                    ofstream fout("h_U_next_r01.txt");
-                    ofstream fout1("h_U_now_r01.txt");
-                    for(int iz = 0; iz < block_z; ++iz)
-                    {
-                        for(int iy = 0; iy < block_y; ++iy)
-                        {
-                            for(int ix = 0; ix < block_x; ++ix)
-                            {
-                                fout << *(plan->h_U_next_r + iz * block_y * block_x + iy * block_x + ix) << " ";
-                                fout1 << *(plan->h_U_now_r + (iz + temph_U.topborder) * temph_U.length_y * temph_U.length_x + (iy + temph_U.backborder) * temph_U.length_x + ix + temph_U.leftborder) << " ";
-                            }
-                        }
-                    }
-                }
-            }
+//                if(rank == 1)
+//                {
+//                    ofstream fout("h_U_next_r01.txt");
+//                    ofstream fout1("h_U_now_r01.txt");
+//                    for(int iz = 0; iz < block_z; ++iz)
+//                    {
+//                        for(int iy = 0; iy < block_y; ++iy)
+//                        {
+//                            for(int ix = 0; ix < block_x; ++ix)
+//                            {
+//                                fout << *(plan->h_U_next_r + iz * block_y * block_x + iy * block_x + ix) << " ";
+//                                fout1 << *(plan->h_U_now_r + (iz + temph_U.topborder) * temph_U.length_y * temph_U.length_x + (iy + temph_U.backborder) * temph_U.length_x + ix + temph_U.leftborder) << " ";
+//                            }
+//                        }
+//                    }
+//                }
+//            }
         }
 
 
-        if(pt.getrank() == 0)
-        {
-            ofstream fout("h_U_freq0.txt");
-            ofstream fout1("h_U_freq_r0.txt");
-            for(int nf = 0; nf < ip->FreqN; ++nf)
-            {
-                for(int iz = 0; iz < interiorLength_z; ++iz)
-                {
-                    for(int iy = 0; iy < interiorLength_y; ++iy)
-                    {
-                        for(int ix = 0; ix < interiorLength_x; ++ix)
-                        {
-                            fout << (plan->h_U_freq + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->x << " ";
-                            fout << (plan->h_U_freq + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->y << " ";
-                            fout1 << (plan->h_U_freq_r + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->x << " ";
-                            fout1 << (plan->h_U_freq_r + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->y << " ";
-                        }
-                    }
-                }
-            }
-        }
+//        if(pt.getrank() == 0)
+//        {
+//            ofstream fout("h_U_freq0.txt");
+//            ofstream fout1("h_U_freq_r0.txt");
+//            for(int nf = 0; nf < ip->FreqN; ++nf)
+//            {
+//                for(int iz = 0; iz < interiorLength_z; ++iz)
+//                {
+//                    for(int iy = 0; iy < interiorLength_y; ++iy)
+//                    {
+//                        for(int ix = 0; ix < interiorLength_x; ++ix)
+//                        {
+//                            fout << (plan->h_U_freq + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->x << " ";
+//                            fout << (plan->h_U_freq + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->y << " ";
+//                            fout1 << (plan->h_U_freq_r + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->x << " ";
+//                            fout1 << (plan->h_U_freq_r + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->y << " ";
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
-        if(pt.getrank() == 1)
-        {
-            ofstream fout("h_U_freq1.txt");
-            ofstream fout1("h_U_freq_r1.txt");
-            for(int nf = 0; nf < ip->FreqN; ++nf)
-            {
-                for(int iz = 0; iz < interiorLength_z; ++iz)
-                {
-                    for(int iy = 0; iy < interiorLength_y; ++iy)
-                    {
-                        for(int ix = 0; ix < interiorLength_x; ++ix)
-                        {
-                            fout << (plan->h_U_freq + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->x << " ";
-                            fout << (plan->h_U_freq + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->y << " ";
-                            fout1 << (plan->h_U_freq_r + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->x << " ";
-                            fout1 << (plan->h_U_freq_r + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->y << " ";
-                        }
-                    }
-                }
-            }
-        }
+//        if(pt.getrank() == 1)
+//        {
+//            ofstream fout("h_U_freq1.txt");
+//            ofstream fout1("h_U_freq_r1.txt");
+//            for(int nf = 0; nf < ip->FreqN; ++nf)
+//            {
+//                for(int iz = 0; iz < interiorLength_z; ++iz)
+//                {
+//                    for(int iy = 0; iy < interiorLength_y; ++iy)
+//                    {
+//                        for(int ix = 0; ix < interiorLength_x; ++ix)
+//                        {
+//                            fout << (plan->h_U_freq + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->x << " ";
+//                            fout << (plan->h_U_freq + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->y << " ";
+//                            fout1 << (plan->h_U_freq_r + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->x << " ";
+//                            fout1 << (plan->h_U_freq_r + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->y << " ";
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
-        if(pt.getrank() == 2)
-        {
-            ofstream fout("h_U_freq2.txt");
-            ofstream fout1("h_U_freq_r2.txt");
-            for(int nf = 0; nf < ip->FreqN; ++nf)
-            {
-                for(int iz = 0; iz < interiorLength_z; ++iz)
-                {
-                    for(int iy = 0; iy < interiorLength_y; ++iy)
-                    {
-                        for(int ix = 0; ix < interiorLength_x; ++ix)
-                        {
-                            fout << (plan->h_U_freq + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->x << " ";
-                            fout << (plan->h_U_freq + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->y << " ";
-                            fout1 << (plan->h_U_freq_r + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->x << " ";
-                            fout1 << (plan->h_U_freq_r + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->y << " ";
-                        }
-                    }
-                }
-            }
-        }
+//        if(pt.getrank() == 2)
+//        {
+//            ofstream fout("h_U_freq2.txt");
+//            ofstream fout1("h_U_freq_r2.txt");
+//            for(int nf = 0; nf < ip->FreqN; ++nf)
+//            {
+//                for(int iz = 0; iz < interiorLength_z; ++iz)
+//                {
+//                    for(int iy = 0; iy < interiorLength_y; ++iy)
+//                    {
+//                        for(int ix = 0; ix < interiorLength_x; ++ix)
+//                        {
+//                            fout << (plan->h_U_freq + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->x << " ";
+//                            fout << (plan->h_U_freq + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->y << " ";
+//                            fout1 << (plan->h_U_freq_r + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->x << " ";
+//                            fout1 << (plan->h_U_freq_r + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->y << " ";
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
-        if(pt.getrank() == 3)
-        {
-            ofstream fout("h_U_freq3.txt");
-            ofstream fout1("h_U_freq_r3.txt");
-            for(int nf = 0; nf < ip->FreqN; ++nf)
-            {
-                for(int iz = 0; iz < interiorLength_z; ++iz)
-                {
-                    for(int iy = 0; iy < interiorLength_y; ++iy)
-                    {
-                        for(int ix = 0; ix < interiorLength_x; ++ix)
-                        {
-                            fout << (plan->h_U_freq + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->x << " ";
-                            fout << (plan->h_U_freq + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->y << " ";
-                            fout1 << (plan->h_U_freq_r + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->x << " ";
-                            fout1 << (plan->h_U_freq_r + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->y << " ";
-                        }
-                    }
-                }
-            }
-        }
+//        if(pt.getrank() == 3)
+//        {
+//            ofstream fout("h_U_freq3.txt");
+//            ofstream fout1("h_U_freq_r3.txt");
+//            for(int nf = 0; nf < ip->FreqN; ++nf)
+//            {
+//                for(int iz = 0; iz < interiorLength_z; ++iz)
+//                {
+//                    for(int iy = 0; iy < interiorLength_y; ++iy)
+//                    {
+//                        for(int ix = 0; ix < interiorLength_x; ++ix)
+//                        {
+//                            fout << (plan->h_U_freq + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->x << " ";
+//                            fout << (plan->h_U_freq + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->y << " ";
+//                            fout1 << (plan->h_U_freq_r + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->x << " ";
+//                            fout1 << (plan->h_U_freq_r + nf * interiorLength_z * interiorLength_y * interiorLength_x + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix)->y << " ";
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
         // 计算当前炮下的梯度，对每一个频率进行循环
         for (uint nf = 0; nf < ip->FreqN; nf++)
@@ -3228,65 +3228,65 @@ void CalGrad(AFDP3D Pa,
         }
     }
 
-    if(pt.getrank() == 0)
-    {
-        ofstream fout("ip->GradVp0.txt");
-        for(int iz = 0; iz < interiorLength_z; ++iz)
-        {
-            for(int iy = 0; iy < interiorLength_y; ++iy)
-            {
-                for(int ix = 0; ix < interiorLength_x; ++ix)
-                {
-                    fout << *(ip->GradVp + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix) << " ";
-                }
-            }
-        }
-    }
+//    if(pt.getrank() == 0)
+//    {
+//        ofstream fout("ip->GradVp0.txt");
+//        for(int iz = 0; iz < interiorLength_z; ++iz)
+//        {
+//            for(int iy = 0; iy < interiorLength_y; ++iy)
+//            {
+//                for(int ix = 0; ix < interiorLength_x; ++ix)
+//                {
+//                    fout << *(ip->GradVp + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix) << " ";
+//                }
+//            }
+//        }
+//    }
 
-    if(pt.getrank() == 1)
-    {
-        ofstream fout("ip->GradVp1.txt");
-        for(int iz = 0; iz < interiorLength_z; ++iz)
-        {
-            for(int iy = 0; iy < interiorLength_y; ++iy)
-            {
-                for(int ix = 0; ix < interiorLength_x; ++ix)
-                {
-                    fout << *(ip->GradVp + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix) << " ";
-                }
-            }
-        }
-    }
+//    if(pt.getrank() == 1)
+//    {
+//        ofstream fout("ip->GradVp1.txt");
+//        for(int iz = 0; iz < interiorLength_z; ++iz)
+//        {
+//            for(int iy = 0; iy < interiorLength_y; ++iy)
+//            {
+//                for(int ix = 0; ix < interiorLength_x; ++ix)
+//                {
+//                    fout << *(ip->GradVp + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix) << " ";
+//                }
+//            }
+//        }
+//    }
 
-    if(pt.getrank() == 2)
-    {
-        ofstream fout("ip->GradVp2.txt");
-        for(int iz = 0; iz < interiorLength_z; ++iz)
-        {
-            for(int iy = 0; iy < interiorLength_y; ++iy)
-            {
-                for(int ix = 0; ix < interiorLength_x; ++ix)
-                {
-                    fout << *(ip->GradVp + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix) << " ";
-                }
-            }
-        }
-    }
+//    if(pt.getrank() == 2)
+//    {
+//        ofstream fout("ip->GradVp2.txt");
+//        for(int iz = 0; iz < interiorLength_z; ++iz)
+//        {
+//            for(int iy = 0; iy < interiorLength_y; ++iy)
+//            {
+//                for(int ix = 0; ix < interiorLength_x; ++ix)
+//                {
+//                    fout << *(ip->GradVp + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix) << " ";
+//                }
+//            }
+//        }
+//    }
 
-    if(pt.getrank() == 3)
-    {
-        ofstream fout("ip->GradVp3.txt");
-        for(int iz = 0; iz < interiorLength_z; ++iz)
-        {
-            for(int iy = 0; iy < interiorLength_y; ++iy)
-            {
-                for(int ix = 0; ix < interiorLength_x; ++ix)
-                {
-                    fout << *(ip->GradVp + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix) << " ";
-                }
-            }
-        }
-    }
+//    if(pt.getrank() == 3)
+//    {
+//        ofstream fout("ip->GradVp3.txt");
+//        for(int iz = 0; iz < interiorLength_z; ++iz)
+//        {
+//            for(int iy = 0; iy < interiorLength_y; ++iy)
+//            {
+//                for(int ix = 0; ix < interiorLength_x; ++ix)
+//                {
+//                    fout << *(ip->GradVp + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix) << " ";
+//                }
+//            }
+//        }
+//    }
 
 }
 
@@ -3430,7 +3430,7 @@ void CalStepLength(AFDP3D Pa,
     UpdateVpInnerGrid(Pa, plan->h_Vp, plan->h_Grad, e, pt);
 
     vector<uint> trans_h_Vp = pt.gettrans_h_Vp();
-    auto begin = trans_h_Vp.begin();
+    vector<uint>::iterator begin = trans_h_Vp.begin();
 
     if(*(begin + TOP))
     {
@@ -3848,7 +3848,7 @@ void PreProcess(AFDP3D Pa,
     UpdateVpInnerGrid(Pa, plan->h_Vp, plan->h_Grad, ip->Alpha, pt);
 
     vector<uint> trans_h_Vp = pt.gettrans_h_Vp();
-    auto begin = trans_h_Vp.begin();
+    vector<uint>::iterator begin = trans_h_Vp.begin();
     if(*(begin + TOP))
     {//cout << "what" << endl;
         dataTransport_Vp(plan->h_Vp, pt, BOTTOM_TO_TOP, Pa, mycomm);

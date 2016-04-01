@@ -3,9 +3,10 @@
  * 2015.11.7
  ******************************************/
 
+#include "mpi.h"
 #include "RWsgy.h"
 #include "Partition.h"
-#include "mpi.h"
+
 
 using namespace std;
 

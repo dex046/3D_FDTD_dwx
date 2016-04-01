@@ -83,7 +83,11 @@ Partition::Partition(const AFDP3D *Pa, const IP *ip, uint totallength_x, uint to
     {
         if(ip->St[is].s.Sx >= indexmin_x && ip->St[is].s.Sx <= indexmax_x && ip->St[is].s.Sy >= indexmin_y && ip->St[is].s.Sy <= indexmax_y &&  ip->St[is].s.Sz >= indexmin_z && ip->St[is].s.Sz <= indexmax_z)
         {
-            this->shot.push_back(make_tuple(ip->St[is].s.Sx - indexmin_x, ip->St[is].s.Sy - indexmin_y, ip->St[is].s.Sz - indexmin_z));
+            vector<uint> vec;
+            vec.push_back(ip->St[is].s.Sx);
+            vec.push_back(ip->St[is].s.Sy);
+            vec.push_back(ip->St[is].s.Sz);
+            this->shot.push_back(vec);
         }
     }
 
@@ -366,7 +370,7 @@ bool Partition::getiscoverbyNPML() const
 }
 
 
-vector<tuple<uint, uint, uint>> Partition::getShot() const
+vector<vector<uint> > Partition::getShot() const
 {
     return this->shot;
 }
@@ -385,7 +389,12 @@ void Partition::setRL(const IP *ip, const AFDP3D *Pa)
             {
                 this->RL_beginnum = this->RL_beginnum < m ? this->RL_beginnum : m;
                 this->RL_endnum = this->RL_endnum > m ? this->RL_endnum : m;
-                this->rl.push_back(make_tuple(temp_x - this->indexmin_x, temp_y - this->indexmin_y, temp_z - this->indexmin_z));
+
+                vector<uint> vec;
+                vec.push_back(temp_x - this->indexmin_x);
+                vec.push_back(temp_y - this->indexmin_y);
+                vec.push_back(temp_z - this->indexmin_z);
+                this->rl.push_back(vec);
             }
         }
 //    }
@@ -395,7 +404,7 @@ uint Partition::getRL_num() const
 {
     return this->rl.size();
 }
-vector<tuple<uint, uint, uint> > Partition::getRL() const
+vector<vector<uint> > Partition::getRL() const
 {
     return this->rl;
 }

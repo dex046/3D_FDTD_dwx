@@ -1,3 +1,143 @@
+chuan xin
+********************************************************************************************
+Doing 3D Hybrid Full Waveform Inversion ...
+Time domain Forward modeling and frequency domain inversion
+Parameters of Inversion are as follows:
+        Nx = 200
+        Ny = 8
+        Nz = 100
+        dx = 10m
+        dy = 10m
+        dz = 10m
+        Nt = 1000
+        dt = 0.001s
+        Npml = 50
+        f0 = 10
+        Nshot = 1
+        Iteration number = 1
+        Using 6 frequencies
+        f_min = 0.1Hz
+        f_int = 0.4Hz
+        f_max = 2.1Hz
+********************************************************************************************
+        Calculating the observed data...
+        Calculating the observed data used:	1548s
+
+        Doing the 0th iteration
+        Calculating the Gradient...
+maxvalue=5.13326e-05
+        Objective function value:	14.2714
+        Step length:	1014.03
+        The 0th iteration used 4400s
+        Writing data to .sgy
+********************************************************************************************
+Fri Apr  1 11:05:29 2016 楼上集群
+
+******************************************
+********************************************************************************************
+(16 * 1 * 8) * 1
+********************************************************************************************
+Doing 3D Hybrid Full Waveform Inversion ...
+Time domain Forward modeling and frequency domain inversion
+Parameters of Inversion are as follows:
+	Nx = 200
+	Ny = 8
+	Nz = 100
+	dx = 10m
+	dy = 10m
+	dz = 10m
+	Nt = 1000
+	dt = 0.001s
+	Npml = 50
+	f0 = 10
+	Nshot = 1
+	Iteration number = 1
+	Using 6 frequencies
+	f_min = 0.1Hz
+	f_int = 0.4Hz
+	f_max = 2.1Hz
+********************************************************************************************
+	Calculating the observed data...
+	Calculating the observed data used:	139s
+
+	Doing the 0th iteration
+	Calculating the Gradient...
+	Objective function value:	14.2714
+	Step length:	1015.06
+	The 0th iteration used 340s
+	Writing data to .sgy
+********************************************************************************************
+Fri Apr  1 10:53:55 2016
+
+******************************************
+********************************************************************************************
+(29 * 3 * 4) * 1
+********************************************************************************************
+Doing 3D Hybrid Full Waveform Inversion ...
+Time domain Forward modeling and frequency domain inversion
+Parameters of Inversion are as follows:
+	Nx = 200
+	Ny = 8
+	Nz = 100
+	dx = 10m
+	dy = 10m
+	dz = 10m
+	Nt = 1000
+	dt = 0.001s
+	Npml = 50
+	f0 = 10
+	Nshot = 1
+	Iteration number = 1
+	Using 6 frequencies
+	f_min = 0.1Hz
+	f_int = 0.4Hz
+	f_max = 2.1Hz
+********************************************************************************************
+	Calculating the observed data...
+	Calculating the observed data used:	62s
+
+	Doing the 0th iteration
+	Calculating the Gradient...
+	Objective function value:	14.2714
+	Step length:	1013.22
+	The 0th iteration used 159s
+	Writing data to .sgy
+********************************************************************************************
+Fri Apr  1 11:17:01 2016
+
+******************************************
+********************************************************************************************
+(29 * 1 * 8) * 1
+********************************************************************************************
+Doing 3D Hybrid Full Waveform Inversion ...
+Time domain Forward modeling and frequency domain inversion
+Parameters of Inversion are as follows:
+	Nx = 200
+	Ny = 8
+	Nz = 100
+	dx = 10m
+	dy = 10m
+	dz = 10m
+	Nt = 1000
+	dt = 0.001s
+	Npml = 50
+	f0 = 10
+	Nshot = 1
+	Iteration number = 1
+	Using 6 frequencies
+	f_min = 0.1Hz
+	f_int = 0.4Hz
+	f_max = 2.1Hz
+********************************************************************************************
+	Calculating the observed data...
+	Calculating the observed data used:	91s
+
+	Doing the 0th iteration
+	Calculating the Gradient...
+	Objective function value:	14.2714
+	Step length:	1014.38
+	The 0th iteration used 216s
+	Writing data to .sgy
 ********************************************************************************************
 Doing 3D Hybrid Full Waveform Inversion ...
 Time domain Forward modeling and frequency domain inversion

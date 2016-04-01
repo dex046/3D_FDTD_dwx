@@ -4,8 +4,8 @@
  ******************************************/
 #ifndef DATATRAN_H
 #define DATATRAN_H
+#include "mpi.h"
 #include "Partition.h"
-#include <mpi.h>
 #include "RWsgy.h"
 
 #define TOP_TO_BOTTOM 0

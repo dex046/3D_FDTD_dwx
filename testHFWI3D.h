@@ -16,8 +16,8 @@
 #ifndef		_HybridFullWaveformInversion_Acoustic_3D_
 #define		_HybridFullWaveformInversion_Acoustic_3D_
 
-#include    "Partition.h"
 #include    "DataTran.h"
+#include    "Partition.h"
 #include	<iostream>
 #include	<stdio.h>
 #include	<string.h>
