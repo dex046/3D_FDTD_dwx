@@ -52,7 +52,7 @@ Inputs:
 FileName: name of the Sgy file
 Data: output data
 ------------------------------------------------------------------------*/
-void ReadData(char FileName[],
+void ReadData(const char* FileName,
             float *Data,
             const Partition &pt,
             usht flag)//flag ?
@@ -64,7 +64,7 @@ void ReadData(char FileName[],
     unsigned short *TraceNum, *SampleNum, *SampleInt;
     short *DFormat;
     bool BReel, BIBM;
-    uint n,m;
+    uint n;
 
     int rank = pt.getrank();
 
@@ -102,9 +102,9 @@ void ReadData(char FileName[],
 //    cout << *DFormat << endl;
 //    cout << BIBM << endl;
 
-    int length_x = pt.getblockLength_x();
-    int length_y = pt.getblockLength_y();
-    int length_z = pt.getblockLength_z();
+    uint length_x = pt.getblockLength_x();
+    uint length_y = pt.getblockLength_y();
+    uint length_z = pt.getblockLength_z();
 
 //cout << "rank" << rank << "rank" << length_x << " " << length_z << " " << endl;
     Trace *trace;
@@ -132,11 +132,11 @@ void ReadData(char FileName[],
 //        }
 //    }
     // write the trace data to Data
-    for(int iz = 0; iz < length_z; ++iz)
+    for(uint iz = 0; iz < length_z; ++iz)
     {
-        for(int iy = 0; iy < length_y; ++iy)
+        for(uint iy = 0; iy < length_y; ++iy)
         {
-            for(int ix = 0; ix < length_x; ++ix)
+            for(uint ix = 0; ix < length_x; ++ix)
             {
                 if(flag == 0)
                 {
@@ -178,7 +178,7 @@ void write_sgs_t_Data(const char * const FileName, usht SampleNum, usht TraceNum
     memset((void *)trace, 0, sizeof(Trace) * RL_num);
 
     int begin_num = pt.getRL_beginnum();
-    int end_num = pt.getRL_endnum();
+    //int end_num = pt.getRL_endnum();
 
     int rank = pt.getrank();
 
@@ -193,7 +193,7 @@ void write_sgs_t_Data(const char * const FileName, usht SampleNum, usht TraceNum
 
     MPI_File_set_size(fh, filesize);
 
-    for (int n = 0; n < RL_num; n++)
+    for (n = 0; n < RL_num; n++)
     {
         trace[n].data = new float[SampleNum];
         memset((void *)trace[n].data, 0, sizeof(float) * SampleNum);
@@ -246,7 +246,7 @@ void write_sgs_t_Data(const char * const FileName, usht SampleNum, usht TraceNum
 
     offset += 3600 + begin_num * (240 + SampleNum * sizeof(float));
 
-    for (int i = 0; i < RL_num; i++)
+    for (uint i = 0; i < RL_num; i++)
     {
         // 写道头
         trace[i].head.headstruct.cdp = i + begin_num;//
@@ -261,9 +261,9 @@ void write_sgs_t_Data(const char * const FileName, usht SampleNum, usht TraceNum
         MPI_File_write_at(fh, offset, &trace[i].data[0], SampleNum, MPI_FLOAT, &status);
         offset += SampleNum * sizeof(float);
     }
-    MPI_Barrier(MPI_COMM_WORLD);
+    //MPI_Barrier(MPI_COMM_WORLD);//2016-5-22
     MPI_File_close(&fh);
-    MPI_Barrier(MPI_COMM_WORLD);
+    //MPI_Barrier(MPI_COMM_WORLD);//2016-5-22
 
     // free memory
     for (n = 0; n < RL_num; n++)
@@ -302,8 +302,8 @@ void WriteData(const char * const FileName,
 
     MPI_Offset filesize = (SampleNum * sizeof(float) + 240) * TraceNum + 3600;
 
-    int indexmin_x = pt.getindexmin_x();
-    int indexmin_z = pt.getindexmin_z();
+//    int indexmin_x = pt.getindexmin_x();
+//    int indexmin_z = pt.getindexmin_z();
 
     uint block_x = 0;
     uint block_z = 0;
@@ -332,7 +332,7 @@ void WriteData(const char * const FileName,
     trace = new Trace[block_x];
     memset((void *)trace, 0, sizeof(Trace) * block_x);
 
-    for (int n = 0; n < block_x; n++)
+    for (n = 0; n < block_x; n++)
     {
         trace[n].data = new float[block_z];
         memset((void *)trace[n].data, 0, sizeof(float) * block_z);
@@ -418,11 +418,7 @@ void MallocVariables(AFDP3D Pa,
     H_Border h_Vp = pt.geth_Vp();
     H_Border h_VW = pt.geth_VW();
 
-    uint sum_h_Coord = pt.geth_Coord_length();
-
-
-
-
+    //uint sum_h_Coord = pt.geth_Coord_length();
 
 //    if(pt.getrank() == ROOT_ID)
 //    {
@@ -627,7 +623,7 @@ void GenerateNPML(AFDP3D Pa,
 
     for (uint iz = 0; iz < block_z; iz++)
     {
-        int actual_iz = iz + min_z;
+        uint actual_iz = iz + min_z;
         if (actual_iz < Pa.PMLz)
         {
             plan->h_dz[iz] = d0 * (Pa.PMLz - 1 - actual_iz + 0.5f)
@@ -643,9 +639,6 @@ void GenerateNPML(AFDP3D Pa,
             plan->h_dz[iz] = 0.0f;
         }
         plan->h_Bz[iz] = expf(-1.0f * plan->h_dz[iz] * Pa.dt);
-
-
-
     }
 
     // x方向
@@ -654,7 +647,7 @@ void GenerateNPML(AFDP3D Pa,
 
     for (uint ix = 0; ix < block_x; ix++)
     {
-        int actual_ix = ix + min_x;
+        uint actual_ix = ix + min_x;
         if (actual_ix < Pa.PMLx)
         {
             plan->h_dx[ix] = d0 * (Pa.PMLx - 1 - actual_ix + 0.5f) *
@@ -680,7 +673,7 @@ void GenerateNPML(AFDP3D Pa,
 
     for (uint iy = 0; iy < block_y; iy++)
     {
-        int actual_iy = iy + min_y;
+        uint actual_iy = iy + min_y;
         if (actual_iy < Pa.PMLy)
         {
             plan->h_dy[iy] = d0 * (Pa.PMLy - 1 - actual_iy + 0.5f) *
@@ -797,9 +790,9 @@ void StepPHIU(AFDP3D Pa,
               float *h_Bz,
               const Partition& pt, int it)
 {
-    uint nnx = Pa.Nx + 2 * Pa.PMLx;
-    uint nny = Pa.Ny + 2 * Pa.PMLy;
-    uint nnz = Pa.Nz + 2 * Pa.PMLz;
+//    uint nnx = Pa.Nx + 2 * Pa.PMLx;
+//    uint nny = Pa.Ny + 2 * Pa.PMLy;
+//    uint nnz = Pa.Nz + 2 * Pa.PMLz;
 
     H_Border temph_U = pt.geth_U();
 
@@ -811,13 +804,13 @@ void StepPHIU(AFDP3D Pa,
     uint block_y = pt.getblockLength_y();
     uint block_z = pt.getblockLength_z();
 
-    int min_x = pt.getindexmin_x();
-    int min_y = pt.getindexmin_y();
-    int min_z = pt.getindexmin_z();
+    uint min_x = pt.getindexmin_x();
+    uint min_y = pt.getindexmin_y();
+    uint min_z = pt.getindexmin_z();
 
-    int max_x = pt.getindexmax_x();
-    int max_y = pt.getindexmax_y();
-    int max_z = pt.getindexmax_z();
+    uint max_x = pt.getindexmax_x();
+    uint max_y = pt.getindexmax_y();
+    uint max_z = pt.getindexmax_z();
 
     float dUx = 0.0f;
     float dUy = 0.0f;
@@ -949,15 +942,15 @@ void StepPHIVKW(AFDP3D Pa,
     uint block_y = pt.getblockLength_y();
     uint block_z = pt.getblockLength_z();
 
-    int min_x = pt.getindexmin_x();
-    int min_y = pt.getindexmin_y();
-    int min_z = pt.getindexmin_z();
+    uint min_x = pt.getindexmin_x();
+    uint min_y = pt.getindexmin_y();
+    uint min_z = pt.getindexmin_z();
 
-    int max_x = pt.getindexmax_x();
-    int max_y = pt.getindexmax_y();
-    int max_z = pt.getindexmax_z();
+    uint max_x = pt.getindexmax_x();
+    uint max_y = pt.getindexmax_y();
+    uint max_z = pt.getindexmax_z();
 
-    int gap_min_x = 0, gap_min_z = 0, gap_min_y = 0, gap_max_y = 0, gap_max_x = 0, gap_max_z = 0;
+    uint gap_min_x = 0, gap_min_z = 0, gap_min_y = 0, gap_max_y = 0, gap_max_x = 0, gap_max_z = 0;
 
     if(min_x < 4)
     {
@@ -1073,15 +1066,15 @@ void StepU(AFDP3D Pa,
     uint block_y = pt.getblockLength_y();
     uint block_z = pt.getblockLength_z();
 
-    int min_x = pt.getindexmin_x();
-    int min_y = pt.getindexmin_y();
-    int min_z = pt.getindexmin_z();
+    uint min_x = pt.getindexmin_x();
+    uint min_y = pt.getindexmin_y();
+    uint min_z = pt.getindexmin_z();
 
-    int max_x = pt.getindexmax_x();
-    int max_y = pt.getindexmax_y();
-    int max_z = pt.getindexmax_z();
+    uint max_x = pt.getindexmax_x();
+    uint max_y = pt.getindexmax_y();
+    uint max_z = pt.getindexmax_z();
 
-    int gap_min_x = 0, gap_min_y = 0, gap_min_z = 0, gap_max_x = 0, gap_max_y = 0, gap_max_z = 0;
+    uint gap_min_x = 0, gap_min_y = 0, gap_min_z = 0, gap_max_x = 0, gap_max_y = 0, gap_max_z = 0;
 
     if(min_x < 4)
     {
@@ -1189,7 +1182,7 @@ void StepVKW(AFDP3D Pa,
 
     H_Border temph_U = pt.geth_U();
     H_Border h_VW = pt.geth_VW();
-    H_Border temph_Vp = pt.geth_Vp();
+    //H_Border temph_Vp = pt.geth_Vp();
 
     uint totallength_x = pt.gettotallength_x();
     uint totallength_y = pt.gettotallength_y();
@@ -1199,15 +1192,15 @@ void StepVKW(AFDP3D Pa,
     uint block_y = pt.getblockLength_y();
     uint block_z = pt.getblockLength_z();
 
-    int min_x = pt.getindexmin_x();
-    int min_y = pt.getindexmin_y();
-    int min_z = pt.getindexmin_z();
+    uint min_x = pt.getindexmin_x();
+    uint min_y = pt.getindexmin_y();
+    uint min_z = pt.getindexmin_z();
 
-    int max_x = pt.getindexmax_x();
-    int max_y = pt.getindexmax_y();
-    int max_z = pt.getindexmax_z();
+    uint max_x = pt.getindexmax_x();
+    uint max_y = pt.getindexmax_y();
+    uint max_z = pt.getindexmax_z();
 
-    int gap_min_x = 0, gap_min_y = 0, gap_min_z = 0, gap_max_x = 0, gap_max_y = 0, gap_max_z = 0;
+    uint gap_min_x = 0, gap_min_y = 0, gap_min_z = 0, gap_max_x = 0, gap_max_y = 0, gap_max_z = 0;
 
     if(min_x < 4)
     {
@@ -1294,8 +1287,8 @@ void StepShotGather(AFDP3D Pa,
                     uint nstep,
                     const Partition& pt)
 {
-    uint nnx = Pa.Nx + 2 * Pa.PMLx;
-    uint nny = Pa.Ny + 2 * Pa.PMLy;
+//    uint nnx = Pa.Nx + 2 * Pa.PMLx;
+//    uint nny = Pa.Ny + 2 * Pa.PMLy;
     uint id = 0;
 
     H_Border temph_U = pt.geth_U();
@@ -1634,14 +1627,14 @@ void PostProcessGrad(AFDP3D Pa,
     uint interiorLength_y = pt.getinteriorLength_y();
     uint interiorLength_z = pt.getinteriorLength_z();
 
-    uint length_x = pt.getblockLength_x();
-    uint length_y = pt.getblockLength_y();
+//    uint length_x = pt.getblockLength_x();
+//    uint length_y = pt.getblockLength_y();
 
-    int gap_x = pt.getinteriormin_x() - pt.getindexmin_x();
-    int gap_y = pt.getinteriormin_y() - pt.getindexmin_y();
-    int gap_z = pt.getinteriormin_z() - pt.getindexmin_z();
+    uint gap_x = pt.getinteriormin_x() - pt.getindexmin_x();
+    uint gap_y = pt.getinteriormin_y() - pt.getindexmin_y();
+    uint gap_z = pt.getinteriormin_z() - pt.getindexmin_z();
 
-    uint interiormin_y = pt.getinteriormin_y();
+//    uint interiormin_y = pt.getinteriormin_y();
     uint interiormin_z = pt.getinteriormin_z();
 
     for (uint iz = 0; iz < interiorLength_z; iz++)
@@ -1697,9 +1690,9 @@ void UpdateVpInnerGrid(AFDP3D Pa,
 //    uint length_x = pt.getblockLength_x();
 //    uint length_y = pt.getblockLength_y();
 
-    int gap_x = pt.getinteriormin_x() - pt.getindexmin_x();
-    int gap_y = pt.getinteriormin_y() - pt.getindexmin_y();
-    int gap_z = pt.getinteriormin_z() - pt.getindexmin_z();
+    uint gap_x = pt.getinteriormin_x() - pt.getindexmin_x();
+    uint gap_y = pt.getinteriormin_y() - pt.getindexmin_y();
+    uint gap_z = pt.getinteriormin_z() - pt.getindexmin_z();
 
     for (uint iz = 0; iz < interiorLength_z; iz++)
     {
@@ -1749,9 +1742,9 @@ void UpdateVpPML(AFDP3D Pa,
     uint min_x = pt.getindexmin_x();
     uint min_y = pt.getindexmin_y();
     uint min_z = pt.getindexmin_z();
-    uint max_x = pt.getindexmax_x();
-    uint max_y = pt.getindexmax_y();
-    uint max_z = pt.getindexmax_z();
+//    uint max_x = pt.getindexmax_x();
+//    uint max_y = pt.getindexmax_y();
+//    uint max_z = pt.getindexmax_z();
 
     for (uint iz = 0; iz < block_z; iz++)
     {
@@ -1760,9 +1753,9 @@ void UpdateVpPML(AFDP3D Pa,
             for (uint ix = 0; ix < block_x; ix++)
             {
                 id = (iz + temph_Vp.topborder) * temph_Vp.length_y * temph_Vp.length_x + (iy + temph_Vp.backborder) * temph_Vp.length_x + ix + temph_Vp.leftborder;
-                int temp_z = iz + min_z;
-                int temp_y = iy + min_y;
-                int temp_x = ix + min_x;
+                uint temp_z = iz + min_z;
+                uint temp_y = iy + min_y;
+                uint temp_x = ix + min_x;
 
                 // z方向
                 if(temp_z < Pa.PMLz)
@@ -1868,18 +1861,18 @@ void AddResidual(AFDP3D Pa,
                  const Partition &pt,
                  int it)
 {
-    uint nny = Pa.Ny + 2 * Pa.PMLy;
-    uint nnx = Pa.Nx + 2 * Pa.PMLx;
-    uint id = 0;
+//    uint nny = Pa.Ny + 2 * Pa.PMLy;
+//    uint nnx = Pa.Nx + 2 * Pa.PMLx;
+//    uint id = 0;
 
     H_Border temph_Vp =pt.geth_Vp();
 
     uint block_x = pt.getblockLength_x();
     uint block_y = pt.getblockLength_y();
 
-    uint indexmin_x = pt.getindexmin_x();
-    uint indexmin_y = pt.getindexmin_y();
-    uint indexmin_z = pt.getindexmin_z();
+//    uint indexmin_x = pt.getindexmin_x();
+//    uint indexmin_y = pt.getindexmin_y();
+//    uint indexmin_z = pt.getindexmin_z();
 
     vector<vector<uint> > vec = pt.getRL();
     vector<uint> temp;
@@ -2024,18 +2017,18 @@ void StepCalGradFreq(AFDP3D Pa,
 {
     uint id = 0;
 
-    H_Border temph_U = pt.geth_U();
+//    H_Border temph_U = pt.geth_U();
 
     uint interiorlength_x = pt.getinteriorLength_x();
     uint interiorlength_y = pt.getinteriorLength_y();
     uint interiorlength_z = pt.getinteriorLength_z();
 
-    uint length_x = pt.getblockLength_x();
-    uint length_y = pt.getblockLength_y();
+//    uint length_x = pt.getblockLength_x();
+//    uint length_y = pt.getblockLength_y();
 
-    int gap_x = pt.getinteriormin_x() - pt.getindexmin_x();
-    int gap_y = pt.getinteriormin_y() - pt.getindexmin_y();
-    int gap_z = pt.getinteriormin_z() - pt.getindexmin_z();
+//    uint gap_x = pt.getinteriormin_x() - pt.getindexmin_x();
+//    uint gap_y = pt.getinteriormin_y() - pt.getindexmin_y();
+//    uint gap_z = pt.getinteriormin_z() - pt.getindexmin_z();
 
     for(uint iz = 0; iz < interiorlength_z; ++iz)
     {
@@ -2086,8 +2079,8 @@ void StepCalWFFreq(AFDP3D Pa,
                    Complex *h_U_freq,
                    const Partition& pt)
 {
-    uint nny = Pa.Ny + 2 * Pa.PMLy;
-    uint nnx = Pa.Nx + 2 * Pa.PMLx;
+//    uint nny = Pa.Ny + 2 * Pa.PMLy;
+//    uint nnx = Pa.Nx + 2 * Pa.PMLx;
 
     H_Border temph_U = pt.geth_U();
 
@@ -2097,12 +2090,12 @@ void StepCalWFFreq(AFDP3D Pa,
     uint interiorlength_y = pt.getinteriorLength_y();
     uint interiorlength_z = pt.getinteriorLength_z();
 
-    uint length_x = pt.getblockLength_x();
-    uint length_y = pt.getblockLength_y();
+//    uint length_x = pt.getblockLength_x();
+//    uint length_y = pt.getblockLength_y();
 
-    int gap_x = pt.getinteriormin_x() - pt.getindexmin_x();
-    int gap_y = pt.getinteriormin_y() - pt.getindexmin_y();
-    int gap_z = pt.getinteriormin_z() - pt.getindexmin_z();
+    uint gap_x = pt.getinteriormin_x() - pt.getindexmin_x();
+    uint gap_y = pt.getinteriormin_y() - pt.getindexmin_y();
+    uint gap_z = pt.getinteriormin_z() - pt.getindexmin_z();
 
     for (uint iz = 0; iz < interiorlength_z; iz++)
     {
@@ -2218,9 +2211,9 @@ void CalTrueWF(AFDP3D Pa,
                float *sgs_t,
                const Partition& pt, const MPI_Comm &mycomm)
 {
-    uint nnx = Pa.Nx + 2 * Pa.PMLx;
-    uint nny = Pa.Ny + 2 * Pa.PMLy;
-    uint nnz = Pa.Nz + 2 * Pa.PMLz;
+//    uint nnx = Pa.Nx + 2 * Pa.PMLx;
+//    uint nny = Pa.Ny + 2 * Pa.PMLy;
+//    uint nnz = Pa.Nz + 2 * Pa.PMLz;
 
     uint block_x = pt.getblockLength_x();
     uint block_y = pt.getblockLength_y();
@@ -2238,23 +2231,28 @@ void CalTrueWF(AFDP3D Pa,
     H_Border temph_U = pt.geth_U();
     H_Border h_VW = pt.geth_VW();
 
-    uint pos_x = pt.get_in_blockPosition_x();
-    uint pos_y = pt.get_in_blockPosition_y();
-    uint pos_z = pt.get_in_blockPosition_z();
+//    uint pos_x = pt.get_in_blockPosition_x();
+//    uint pos_y = pt.get_in_blockPosition_y();
+//    uint pos_z = pt.get_in_blockPosition_z();
 
     uint RL_num = pt.getRL_num();
 
     float Wavelet = 0.0f;
 
-    int in_rank = pt.get_in_rank();
-    int rank = pt.getrank();
+//    uint in_rank = pt.get_in_rank();
+    uint rank = pt.getrank();
+
+    long long commute_time = 0;
+    struct timeval start, end;
+    //struct timeval total_begin, total_end;
+
 
     // 给速度赋值
     memset((void *)plan->h_Vp,			0,	sizeof(float) * temph_Vp.length_x * temph_Vp.length_y * temph_Vp.length_z);
 
-    for(int i = 0; i < block_z; ++i)
+    for(uint i = 0; i < block_z; ++i)
     {
-        for(int j = 0; j < block_y; ++j)
+        for(uint j = 0; j < block_y; ++j)
         {
             memcpy(plan->h_Vp + (i + temph_Vp.topborder) * temph_Vp.length_y * temph_Vp.length_x + (j + temph_Vp.backborder) * temph_Vp.length_x + temph_Vp.leftborder,	ip->TrueVp + i * block_y * block_x + j * block_x,	block_x * sizeof(float));
         }
@@ -2301,9 +2299,9 @@ void CalTrueWF(AFDP3D Pa,
         // 对时间点进行循环
         for (uint it = 0; it < Pa.Nt; it++)
         {
-            for(int i = 0; i < block_z; ++i)
+            for(uint i = 0; i < block_z; ++i)
             {
-                for(int j = 0; j < block_y; ++j)
+                for(uint j = 0; j < block_y; ++j)
                 {
                     // 波场时刻转换
                     memcpy(plan->h_U_past + i * block_y * block_x + j * block_x, plan->h_U_now + (i + temph_U.topborder) * temph_U.length_y * temph_U.length_x + (j + temph_U.backborder) * temph_U.length_x + temph_U.leftborder, sizeof(float) * block_x);
@@ -2333,7 +2331,12 @@ void CalTrueWF(AFDP3D Pa,
 //                    }
 //                }
 //            }
+
+            gettimeofday(&start, 0);
             dataTransport(plan->h_U_now, pt, STEP_U, it, mycomm);
+            gettimeofday(&end, 0);
+
+            commute_time += end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000LL;
 
 //            MPI_Barrier(MPI_COMM_WORLD);
 //            if(rank == 0)
@@ -2374,10 +2377,13 @@ void CalTrueWF(AFDP3D Pa,
 
 
 
+            gettimeofday(&start, 0);
             dataTransport(plan->h_V, pt, STEP_V, it, mycomm);//send data
             dataTransport(plan->h_K, pt, STEP_K, it, mycomm);//send data
             dataTransport(plan->h_W, pt, STEP_W, it, mycomm);//send data
+            gettimeofday(&end, 0);
 
+            commute_time += end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000LL;
 
 
 
@@ -2414,6 +2420,20 @@ void CalTrueWF(AFDP3D Pa,
                 Pa.Nt * RL_num * sizeof(float));
         }
 
+        char *sc = new char(100);
+        sprintf(sc, "%d", rank);
+        string temp = sc;
+        string str = "./CalTrueWF_comu_/CalTrueWF_comu_" + temp;
+
+        ofstream fout(str.c_str());
+        fout << static_cast<double>(commute_time) / static_cast<double>(1000000LL) << "s" << endl;
+        fout.flush();
+        fout.close();
+
+        delete sc;
+
+
+        //ofstream fout();
 //        if(rank == 0)
 //        {
 //            ofstream fout("sgs_t00.txt");
@@ -2468,9 +2488,9 @@ void CalGrad(AFDP3D Pa,
              const Partition& pt,
              const MPI_Comm& mycomm)
 {
-    uint nnz = Pa.Nz + 2 * Pa.PMLz;
-    uint nny = Pa.Ny + 2 * Pa.PMLy;
-    uint nnx = Pa.Nx + 2 * Pa.PMLx;
+//    uint nnz = Pa.Nz + 2 * Pa.PMLz;
+//    uint nny = Pa.Ny + 2 * Pa.PMLy;
+//    uint nnx = Pa.Nx + 2 * Pa.PMLx;
 
     uint block_x = pt.getblockLength_x();
     uint block_y = pt.getblockLength_y();
@@ -2488,9 +2508,9 @@ void CalGrad(AFDP3D Pa,
     uint indexmax_y = pt.getindexmax_y();
     uint indexmax_z = pt.getindexmax_z();
 
-    uint interior_min_z = pt.getinteriormin_z();
-    uint interior_min_y = pt.getinteriormin_y();
-    uint interior_min_x = pt.getinteriormin_x();
+//    uint interior_min_z = pt.getinteriormin_z();
+//    uint interior_min_y = pt.getinteriormin_y();
+//    uint interior_min_x = pt.getinteriormin_x();
 
     uint interiorLength_x = pt.getinteriorLength_x();
     uint interiorLength_y = pt.getinteriorLength_y();
@@ -2499,16 +2519,19 @@ void CalGrad(AFDP3D Pa,
     int rank = pt.getrank();
     int in_rank = pt.get_in_rank();
 
-    int rank_size = pt.getsize();
-    int in_rank_size = pt.get_in_size();
+//    int rank_size = pt.getsize();
+//    int in_rank_size = pt.get_in_size();
 
-    uint RecNum = pt.geth_Coord_length();
+//    uint RecNum = pt.geth_Coord_length();
     int RL_num = pt.getRL_num();
 
     float Wavelet = 0.0f;
     Complex a;
     a.x = 0.0f;
     a.y = 0.0f;
+
+    long long commute_time = 0;
+    struct timeval start, end;
 
     if(interiorLength_x && interiorLength_y && interiorLength_z)
     {
@@ -2519,15 +2542,15 @@ void CalGrad(AFDP3D Pa,
 
     // 给速度赋值
     memset((void *)plan->h_Vp,			0,	sizeof(float) * temph_Vp.length_z * temph_Vp.length_y * temph_Vp.length_x);
-    for(int i = 0; i < block_z; ++i)
+    for(uint i = 0; i < block_z; ++i)
     {
-        for(int j = 0; j < block_y; ++j)
+        for(uint j = 0; j < block_y; ++j)
         {
             memcpy(plan->h_Vp + (temph_Vp.topborder + i) * temph_Vp.length_y * temph_Vp.length_x + (j + temph_Vp.backborder) * temph_Vp.length_x + temph_Vp.leftborder, ip->CurrVp + i * block_y * block_x + j * block_x, block_x * sizeof(float));
         }
     }
 
-    MPI_Status status_send, status_recv;
+    MPI_Status status_recv;
     uint is = rank % ip->ShotN;
     // 对每一炮进行迭代
 //    for (uint is = 0; is < ip->ShotN; is++)
@@ -2586,9 +2609,9 @@ void CalGrad(AFDP3D Pa,
 //                cout << "it=" << it << endl;
 //            }
 
-            for(int iz = 0; iz < block_z; ++iz)
+            for(uint iz = 0; iz < block_z; ++iz)
             {
-                for(int iy = 0; iy < block_y; ++iy)
+                for(uint iy = 0; iy < block_y; ++iy)
                 {
                     // 波场时刻转换
                     memcpy(plan->h_U_past + iz * block_y * block_x + iy * block_x, plan->h_U_now + (iz + temph_U.topborder) * temph_U.length_y * temph_U.length_x + (iy + temph_U.backborder) * temph_U.length_x + temph_U.leftborder, sizeof(float) * block_x);
@@ -2596,7 +2619,11 @@ void CalGrad(AFDP3D Pa,
                 }
             }
 
+            gettimeofday(&start, 0);
             dataTransport(plan->h_U_now, pt, STEP_U, it, mycomm);//send data
+            gettimeofday(&end, 0);
+
+            commute_time += end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000LL;
 
             if(RL_num)
             {
@@ -2627,9 +2654,14 @@ void CalGrad(AFDP3D Pa,
                 plan->h_PHIx_U_x, plan->h_PHIy_U_y, plan->h_PHIz_U_z,
                 plan->h_Bx, plan->h_By, plan->h_Bz, pt, it);
 
+
+            gettimeofday(&start, 0);
             dataTransport(plan->h_V, pt, STEP_V, it, mycomm);//send data
             dataTransport(plan->h_K, pt, STEP_K, it, mycomm);//send data
             dataTransport(plan->h_W, pt, STEP_W, it, mycomm);//send data
+            gettimeofday(&end, 0);
+
+            commute_time += end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000LL;
 
             // 一步更新V和W的卷积项
             StepPHIVKW(Pa, plan->h_V, plan->h_K, plan->h_W,
@@ -2804,9 +2836,9 @@ void CalGrad(AFDP3D Pa,
 //            {
 //                cout << "iit=" << it << endl;
 //            }
-            for(int iz = 0; iz < block_z; ++iz)
+            for(uint iz = 0; iz < block_z; ++iz)
             {
-                for(int iy = 0; iy < block_y; ++iy)
+                for(uint iy = 0; iy < block_y; ++iy)
                 {
                     // 波场时刻转换
                     memcpy(plan->h_U_past_r + iz * block_y * block_x + iy * block_x, plan->h_U_now_r + (iz + temph_U.topborder) * temph_U.length_y * temph_U.length_x + (iy + temph_U.backborder) * temph_U.length_x + temph_U.leftborder, sizeof(float) * block_x);
@@ -2827,7 +2859,11 @@ void CalGrad(AFDP3D Pa,
 //                }
 //            }
 
+            gettimeofday(&start, 0);
             dataTransport(plan->h_U_now_r, pt, STEP_U, it, mycomm);//send data
+            gettimeofday(&end, 0);
+
+            commute_time += end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000LL;
 
             if(interiorLength_x && interiorLength_y && interiorLength_z)
             {
@@ -2850,9 +2886,13 @@ void CalGrad(AFDP3D Pa,
                 plan->h_PHIx_U_x_r, plan->h_PHIy_U_y_r, plan->h_PHIz_U_z_r,
                 plan->h_Bx, plan->h_By, plan->h_Bz, pt, it);
 
+            gettimeofday(&start, 0);
             dataTransport(plan->h_V_r, pt, STEP_V, it, mycomm);//send data
             dataTransport(plan->h_K_r, pt, STEP_K, it, mycomm);//send data
             dataTransport(plan->h_W_r, pt, STEP_W, it, mycomm);//send data
+            gettimeofday(&end, 0);
+
+            commute_time += end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000LL;
 
             // 一步更新V和W的卷积项
             StepPHIVKW(Pa, plan->h_V_r, plan->h_K_r, plan->h_W_r,
@@ -3063,14 +3103,14 @@ void CalGrad(AFDP3D Pa,
         {
             if(is == 0)
             {
-                for(int i = 0; i < ip->ShotN - 1; ++i)
+                for(uint i = 0; i < ip->ShotN - 1; ++i)
                 {
                     MPI_Recv(temp_h_Grad, interiorLength_z * interiorLength_y * interiorLength_x, MPI_FLOAT, MPI_ANY_SOURCE, STEP_GRAD, MPI_COMM_WORLD, &status_recv);
-                    for(int iz = 0; iz < interiorLength_z; ++iz)
+                    for(uint iz = 0; iz < interiorLength_z; ++iz)
                     {
-                        for(int iy = 0; iy < interiorLength_y; ++iy)
+                        for(uint iy = 0; iy < interiorLength_y; ++iy)
                         {
-                            for(int ix = 0; ix < interiorLength_x; ++ix)
+                            for(uint ix = 0; ix < interiorLength_x; ++ix)
                             {
                                 //id1 = iz * interiorLength_x + ix;
                                 plan->h_Grad[iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix] += temp_h_Grad[iz * interiorLength_y * interiorLength_x + iy * interiorLength_x + ix];
@@ -3079,7 +3119,7 @@ void CalGrad(AFDP3D Pa,
                     }
                 }
 
-                for(int i = 1; i < ip->ShotN; ++i)
+                for(uint i = 1; i < ip->ShotN; ++i)
                 {
                     MPI_Send(plan->h_Grad, interiorLength_z * interiorLength_y * interiorLength_x, MPI_FLOAT, rank + i, STEP_GRAD, MPI_COMM_WORLD);
                 }
@@ -3164,7 +3204,7 @@ void CalGrad(AFDP3D Pa,
             }
             else
             {
-                for(int i = 1; i < ip->ShotN; ++i)
+                for(uint i = 1; i < ip->ShotN; ++i)
                 {
 
                     //cout << "ooooooooo" << ip->ObjIter[It] << endl;
@@ -3201,7 +3241,7 @@ void CalGrad(AFDP3D Pa,
 //        {
 //            cout << ip->ObjIter[It] << " "  << rank << endl;
 //        }
-        MPI_Barrier(MPI_COMM_WORLD);
+//        MPI_Barrier(MPI_COMM_WORLD);//2016-5-22
         MPI_Bcast(&ip->ObjIter[It], 1, MPI_FLOAT, ROOT_ID, MPI_COMM_WORLD);
 
         //MPI_Barrier(MPI_COMM_WORLD);
@@ -3219,9 +3259,9 @@ void CalGrad(AFDP3D Pa,
 //        }
 //    }//shotN
 
-    for(int iz = 0; iz < interiorLength_z; ++iz)
+    for(uint iz = 0; iz < interiorLength_z; ++iz)
     {
-        for(int iy = 0; iy < interiorLength_y; ++iy)
+        for(uint iy = 0; iy < interiorLength_y; ++iy)
         {
             // 输出梯度
             memcpy(ip->GradVp + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x, plan->h_Grad + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x, interiorLength_x * sizeof(float));
@@ -3288,6 +3328,18 @@ void CalGrad(AFDP3D Pa,
 //        }
 //    }
 
+    char *sc = new char(100);
+    sprintf(sc, "%d", rank);
+    string temp = sc;
+    string str = "./CalGrad_comu_/CalGrad_comu_" + temp;
+
+    ofstream fout(str.c_str());
+    fout << static_cast<double>(commute_time) / static_cast<double>(1000000LL) << "s" << endl;
+    fout.flush();
+    fout.close();
+
+    delete sc;
+
 }
 
 /*------------------------------------------------------------------------
@@ -3313,9 +3365,9 @@ void CalStepLength(AFDP3D Pa,
                    const Partition& pt,
                    const MPI_Comm& mycomm)
 {
-    uint nnz = Pa.Nz + 2 * Pa.PMLz;
-    uint nny = Pa.Ny + 2 * Pa.PMLy;
-    uint nnx = Pa.Nx + 2 * Pa.PMLx;
+//    uint nnz = Pa.Nz + 2 * Pa.PMLz;
+//    uint nny = Pa.Ny + 2 * Pa.PMLy;
+//    uint nnx = Pa.Nx + 2 * Pa.PMLx;
 
     uint block_x = pt.getblockLength_x();
     uint block_y = pt.getblockLength_y();
@@ -3325,9 +3377,9 @@ void CalStepLength(AFDP3D Pa,
     uint interiorLength_y = pt.getinteriorLength_y();
     uint interiorLength_z = pt.getinteriorLength_z();
 
-    uint interior_min_x = pt.getinteriormin_x();
-    uint interior_min_y = pt.getinteriormin_y();
-    uint interior_min_z = pt.getinteriormin_z();
+//    uint interior_min_x = pt.getinteriormin_x();
+//    uint interior_min_y = pt.getinteriormin_y();
+//    uint interior_min_z = pt.getinteriormin_z();
 
     uint indexmin_x = pt.getindexmin_x();
     uint indexmin_y = pt.getindexmin_y();
@@ -3341,16 +3393,16 @@ void CalStepLength(AFDP3D Pa,
     H_Border temph_U = pt.geth_U();
     H_Border h_VW = pt.geth_VW();
 
-    MPI_Request request_send_U, request_send_V, request_send_W, request_recv_U, request_recv_V, request_recv_W, request_send, request_recv_MAX;
-    MPI_Status status_send, status_recv;
 
-    int rank = pt.getrank();
-    int in_rank = pt.get_in_rank();
+    MPI_Status status_recv;
 
-    int rank_size = pt.getsize();
-    int in_rank_size = pt.get_in_size();
+    uint rank = pt.getrank();
+    uint in_rank = pt.get_in_rank();
 
-    uint sumblock_x = pt.getsumBlock_x();
+    uint rank_size = pt.getsize();
+//    int in_rank_size = pt.get_in_size();
+
+//    uint sumblock_x = pt.getsumBlock_x();
     //uint sumblock_z = pt.getsumBlock_z();
 
     uint RL_num = pt.getRL_num();
@@ -3363,6 +3415,9 @@ void CalStepLength(AFDP3D Pa,
 
     float Wavelet = 0.0f;
     float MV = 0;
+
+    long long commute_time = 0;
+    struct timeval start, end;
 
     // 将梯度进行归一化
     if(interiorLength_z && interiorLength_y && interiorLength_x)
@@ -3390,7 +3445,7 @@ void CalStepLength(AFDP3D Pa,
 
         MV = MaxValue(max_buf, rank_size);
     }
-    MPI_Barrier(MPI_COMM_WORLD);
+    //MPI_Barrier(MPI_COMM_WORLD);//2016-5-22
     MPI_Bcast(&MV, 1, MPI_FLOAT, ROOT_ID, MPI_COMM_WORLD);
 
 //    if(rank == ROOT_ID)
@@ -3410,18 +3465,18 @@ void CalStepLength(AFDP3D Pa,
     {
 
         memset((void *)plan->h_Grad, 0, sizeof(float) * interiorLength_z * interiorLength_y * interiorLength_x);
-        for(int iz = 0; iz < interiorLength_z; ++iz)
+        for(uint iz = 0; iz < interiorLength_z; ++iz)
         {
-            for(int iy = 0; iy < interiorLength_y; ++iy)
+            for(uint iy = 0; iy < interiorLength_y; ++iy)
             {
                 memcpy(plan->h_Grad + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x, ip->GradVp + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x, sizeof(float) * interiorLength_x);
             }
         }
     }
 
-    for(int iz = 0; iz < block_z; ++iz)
+    for(uint iz = 0; iz < block_z; ++iz)
     {
-        for(int iy = 0; iy < block_y; ++iy)
+        for(uint iy = 0; iy < block_y; ++iy)
         {
             memcpy(plan->h_Vp + (iz + temph_Vp.topborder) * temph_Vp.length_y * temph_Vp.length_x + (iy + temph_Vp.backborder) * temph_Vp.length_x, ip->CurrVp + iz * block_y * block_x + iy * block_x, sizeof(float) * block_x);
         }
@@ -3431,6 +3486,8 @@ void CalStepLength(AFDP3D Pa,
 
     vector<uint> trans_h_Vp = pt.gettrans_h_Vp();
     vector<uint>::iterator begin = trans_h_Vp.begin();
+
+    gettimeofday(&start, 0);//time
 
     if(*(begin + TOP))
     {
@@ -3459,7 +3516,11 @@ void CalStepLength(AFDP3D Pa,
 
 
     dataGather(plan->h_Vp, pt, STEP_VP, mycomm);
-    MPI_Barrier(MPI_COMM_WORLD);
+
+    gettimeofday(&end, 0);//time
+    commute_time += end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000LL;
+
+    //MPI_Barrier(MPI_COMM_WORLD);////2016-5-22
 
 
 
@@ -3472,9 +3533,9 @@ void CalStepLength(AFDP3D Pa,
 
 
 
-    int *ranks = new int[pt.get_in_sumBlock_x()];
+//    int *ranks = new int[pt.get_in_sumBlock_x()];
     //int cpu_index_z = (Pa.PMLz + 2) / pt.getblockLength_z();
-    int max_rank_RL = in_rank, min_rank_RL = in_rank;
+    uint max_rank_RL = in_rank, min_rank_RL = in_rank;
     float buf[2];// = {fenzi, fenmu};
     // 求取最终的步长
 
@@ -3498,7 +3559,7 @@ void CalStepLength(AFDP3D Pa,
         if(!(RL_num && indexmin_x <= Pa.PMLx + ip->St[0].rn - 1 && indexmax_x >= Pa.PMLx + ip->St[0].rn - 1))
             MPI_Recv(&max_rank_RL, 1, MPI_INT, MPI_ANY_SOURCE, STEP_MAX_RL, mycomm, &status_recv);
     }
-    MPI_Barrier(mycomm);
+    //MPI_Barrier(mycomm);//2016-5-22
     //cout << rank << "in" << endl;
     MPI_Bcast(&max_rank_RL, 1, MPI_INT, ROOT_ID, mycomm);
     MPI_Bcast(&min_rank_RL, 1, MPI_INT, ROOT_ID, mycomm);
@@ -3560,8 +3621,13 @@ void CalStepLength(AFDP3D Pa,
                 }
             }
 
+            gettimeofday(&start, 0);
             dataTransport(plan->h_U_now, pt, STEP_U, it, mycomm);//send data
-            MPI_Barrier(mycomm);
+            gettimeofday(&end, 0);
+            commute_time += end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000LL;
+
+
+//            MPI_Barrier(mycomm);//2016-5-22
 
             // 一步记录炮集
             StepShotGather(Pa, plan->h_U_now, plan->h_TrailWF,
@@ -3577,9 +3643,14 @@ void CalStepLength(AFDP3D Pa,
                 plan->h_PHIx_U_x, plan->h_PHIy_U_y, plan->h_PHIz_U_z,
                 plan->h_Bx, plan->h_By, plan->h_Bz, pt, it);
 
+            gettimeofday(&start, 0);
+
             dataTransport(plan->h_V, pt, STEP_V, it, mycomm);//send data
             dataTransport(plan->h_K, pt, STEP_K, it, mycomm);//send data
             dataTransport(plan->h_W, pt, STEP_W, it, mycomm);//send data
+
+            gettimeofday(&end, 0);
+            commute_time += end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000LL;
 
             // 一步更新V和W的卷积项
             StepPHIVKW(Pa, plan->h_V, plan->h_K, plan->h_W,
@@ -3721,10 +3792,10 @@ void CalStepLength(AFDP3D Pa,
                 }
             }
 //cout << "nnnnn" << nf << endl;
-            MPI_Barrier(mycomm);
+//            MPI_Barrier(mycomm);//2016-5-22
             MPI_Bcast(plan->h_SumFenzi, 1, MPI_FLOAT, max_rank_RL, mycomm);
             MPI_Bcast(plan->h_SumFenmu, 1, MPI_FLOAT, max_rank_RL, mycomm);
-            MPI_Barrier(mycomm);
+//            MPI_Barrier(mycomm);//2016-5-22
 
             //cout << "wwww" << rank << endl;
 //            if(rank == ROOT_ID)
@@ -3733,10 +3804,10 @@ void CalStepLength(AFDP3D Pa,
     //}//shotN
 
         ip->Alpha = (*plan->h_SumFenzi / *plan->h_SumFenmu) * e;
-        MPI_Barrier(mycomm);
+//        MPI_Barrier(mycomm);//2016-5-22
         MPI_Bcast(&ip->Alpha, 1, MPI_FLOAT, max_rank_RL, mycomm);
 
-    MPI_Barrier(MPI_COMM_WORLD);
+//    MPI_Barrier(MPI_COMM_WORLD);//2016-5-22
     MPI_Bcast(&ip->Alpha, 1, MPI_FLOAT, ROOT_ID, MPI_COMM_WORLD);
 
     if(rank == ROOT_ID)
@@ -3786,6 +3857,18 @@ void CalStepLength(AFDP3D Pa,
 
 
     //ip->Alpha = *plan->h_SumFenzi / *plan->h_SumFenmu;
+
+    char *sc = new char(100);
+    sprintf(sc, "%d", rank);
+    string temp = sc;
+    string str = "./CalStepLength_comu_/CalStepLength_comu_" + temp;
+
+    ofstream fout(str.c_str());
+    fout << static_cast<double>(commute_time) / static_cast<double>(1000000LL) << "s" << endl;
+    fout.flush();
+    fout.close();
+
+    delete sc;
 }
 
 
@@ -3806,38 +3889,40 @@ void PreProcess(AFDP3D Pa,
                 const Partition& pt,
                 const MPI_Comm& mycomm)
 {
-    uint nnz = Pa.Nz + 2 * Pa.PMLz;
-    uint nny = Pa.Ny + 2 * Pa.PMLy;
-    uint nnx = Pa.Nx + 2 * Pa.PMLx;
+//    uint nnz = Pa.Nz + 2 * Pa.PMLz;
+//    uint nny = Pa.Ny + 2 * Pa.PMLy;
+//    uint nnx = Pa.Nx + 2 * Pa.PMLx;
 
     uint block_x = pt.getblockLength_x();
     uint block_y = pt.getblockLength_y();
     uint block_z = pt.getblockLength_z();
 
-    int interiorLength_x = pt.getinteriorLength_x();
-    int interiorLength_y = pt.getinteriorLength_y();
-    int interiorLength_z = pt.getinteriorLength_z();
+    uint rank = pt.getrank();
+
+    uint interiorLength_x = pt.getinteriorLength_x();
+    uint interiorLength_y = pt.getinteriorLength_y();
+    uint interiorLength_z = pt.getinteriorLength_z();
 
 //    if(interiorLength_x == 0 || interiorLength_y == 0 || interiorLength_z == 0)
 //        return;
 
-    int interior_min_x = pt.getinteriormin_x();
-    int interior_min_y = pt.getinteriormin_y();
-    int interior_min_z = pt.getinteriormin_z();
+//    int interior_min_x = pt.getinteriormin_x();
+//    int interior_min_y = pt.getinteriormin_y();
+//    int interior_min_z = pt.getinteriormin_z();
 
     H_Border temph_Vp = pt.geth_Vp();
 
-    for(int iz = 0; iz < interiorLength_z; ++iz)
+    for(uint iz = 0; iz < interiorLength_z; ++iz)
     {
-        for(int iy = 0; iy < interiorLength_y; ++iy)
+        for(uint iy = 0; iy < interiorLength_y; ++iy)
         {
             memcpy(plan->h_Grad + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x, ip->GradVp + iz * interiorLength_y * interiorLength_x + iy * interiorLength_x, sizeof(float) * interiorLength_x);
         }
     }
 
-    for(int iz = 0; iz < block_z; ++iz)
+    for(uint iz = 0; iz < block_z; ++iz)
     {
-        for(int iy = 0; iy < block_y; ++iy)
+        for(uint iy = 0; iy < block_y; ++iy)
         {
             memcpy(plan->h_Vp + (iz + temph_Vp.topborder) * temph_Vp.length_y * temph_Vp.length_x + (iy + temph_Vp.backborder) * temph_Vp.length_x + temph_Vp.leftborder, ip->CurrVp + iz * block_y * block_x + iy * block_x, sizeof(float) * block_x);
         }
@@ -3849,6 +3934,12 @@ void PreProcess(AFDP3D Pa,
 
     vector<uint> trans_h_Vp = pt.gettrans_h_Vp();
     vector<uint>::iterator begin = trans_h_Vp.begin();
+
+    long long commute_time = 0;
+    struct timeval start, end;
+
+    gettimeofday(&start, 0);
+
     if(*(begin + TOP))
     {//cout << "what" << endl;
         dataTransport_Vp(plan->h_Vp, pt, BOTTOM_TO_TOP, Pa, mycomm);
@@ -3876,11 +3967,17 @@ void PreProcess(AFDP3D Pa,
 
     dataGather(plan->h_Vp, pt, STEP_VP, mycomm);
 
+    gettimeofday(&end, 0);
+
+    commute_time += end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000LL;
+
+
+
     UpdateVpPML(Pa, plan->h_Vp, plan->h_Grad, ip->Alpha, pt);
 
-    for(int iz = 0; iz < block_z; ++iz)
+    for(uint iz = 0; iz < block_z; ++iz)
     {
-        for(int iy = 0; iy < block_y; ++iy)
+        for(uint iy = 0; iy < block_y; ++iy)
         {
             memcpy(ip->CurrVp + iz * block_y * block_x + iy * block_x, plan->h_Vp + (iz + temph_Vp.topborder) * temph_Vp.length_y * temph_Vp.length_x + (iy + temph_Vp.backborder) * temph_Vp.length_x + temph_Vp.leftborder, sizeof(float) * block_x);
         }
@@ -3888,4 +3985,16 @@ void PreProcess(AFDP3D Pa,
 
 
     ip->Alpha = 0.0f;
+
+    char *sc = new char(100);
+    sprintf(sc, "%d", rank);
+    string temp = sc;
+    string str = "./PreProcess_comu_/PreProcess_comu_" + temp;
+
+    ofstream fout(str.c_str());
+    fout << static_cast<double>(commute_time) / static_cast<double>(1000000LL) << "s" << endl;
+    fout.flush();
+    fout.close();
+
+    delete sc;
 }

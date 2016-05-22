@@ -4,7 +4,9 @@
  ******************************************/
 #ifndef DATATRAN_H
 #define DATATRAN_H
-#include "mpi.h"
+
+#pragma once
+#include "common.h"
 #include "Partition.h"
 #include "RWsgy.h"
 

@@ -18,12 +18,7 @@
 
 #include    "DataTran.h"
 #include    "Partition.h"
-#include	<iostream>
-#include	<stdio.h>
-#include	<string.h>
-#include	<math.h>
-#include	<stdlib.h>
-#include	<time.h>
+
 #include	"RWsgy.h"
 #include	"fftw3.h"
 
@@ -190,7 +185,7 @@ float Ricker(float f0,
              float t);
 
 // 从Sgy文件中读取数据
-void ReadData(char FileName[],
+void ReadData(const char *FileName,
               float *Data,
               const Partition &pt,
               usht flag);

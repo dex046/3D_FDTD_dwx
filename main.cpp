@@ -13,15 +13,22 @@
 
 * 日期：2015-12-23
 **************************************************************************/
-
 #include	"testHFWI3D.h"
-
 using namespace std;
 
 int main(int argc, char ** argv)
 {
+
+    struct timeval start, end;
+    struct timeval total_begin, total_end;
+
+    gettimeofday(&total_begin, 0);
+
+    long long duration = 0;
+
+
+
     ofstream fout("result.txt");
-    struct tm *ptr;
     time_t lt;
     lt = time(NULL);
     fout << (ctime(&lt)) << endl;
@@ -32,15 +39,11 @@ int main(int argc, char ** argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &p_size);
 
-    uint cpu_x = 1, cpu_y = 8, cpu_z = 1;
-    uint shot_x = 2, shot_y = 1, shot_z = 2;
-
-
 
     // 有限差分参数
     AFDP3D *Pa;
     Pa = new AFDP3D[1];
-    memset((void *)Pa, 0, sizeof(AFDP3D));
+//    memset((void *)Pa, 0, sizeof(AFDP3D));
 
     Pa->dt = 0.001f;
     Pa->dx = 10.0f;
@@ -139,14 +142,14 @@ int main(int argc, char ** argv)
 
     uint RL_num = pt.getRL_num();
 
-    uint indexmin_x = pt.getindexmin_x();
-    uint indexmax_x = pt.getindexmax_x();
+//    uint indexmin_x = pt.getindexmin_x();
+//    uint indexmax_x = pt.getindexmax_x();
 
-    uint indexmin_y = pt.getindexmin_y();
-    uint indexmax_y = pt.getindexmax_y();
+//    uint indexmin_y = pt.getindexmin_y();
+//    uint indexmax_y = pt.getindexmax_y();
 
-    uint indexmin_z = pt.getindexmin_z();
-    uint indexmax_z = pt.getindexmax_z();
+//    uint indexmin_z = pt.getindexmin_z();
+//    uint indexmax_z = pt.getindexmax_z();
 
     try
     {
@@ -167,11 +170,28 @@ int main(int argc, char ** argv)
 
 
     // 读入真实速度和初始速度
-    char TrueVp[] = "TrueVp-3D.sgy";
-    char InitVp[] = "InitVp-3D.sgy";
+    gettimeofday(&start, 0);
 
     ReadData(TrueVp, ip->TrueVp, pt, 0);
     ReadData(InitVp, ip->CurrVp, pt, 0);
+cout << 13 << endl;
+    gettimeofday(&end, 0);
+    duration = (end.tv_usec - start.tv_usec) + (end.tv_sec - start.tv_sec) * 1000000LL;
+
+    {
+        char *sc = new char(100);
+        sprintf(sc, "%d", rank);
+        string temp = sc;
+        string str = "./read_time/read_time" + temp;
+
+        ofstream fread_time(str.c_str());
+        fread_time << static_cast<double>(duration) / static_cast<double>(1000) << endl;
+
+        delete sc;
+    }
+
+    cout << rank << " read data cost: " << static_cast<double>(duration) / static_cast<double>(1000) << "ms" << endl;
+    //fout << "read data cost: " << duration / 1000 << "ms" << endl;
 
 //    if(rank == 0)
 //    {
@@ -402,7 +422,7 @@ int main(int argc, char ** argv)
         fout << "********************************************************************************************" << endl;
     }
 
-    clock_t begin, duration;
+    //clock_t begin, duration;
 
     if(rank == ROOT_ID)
     {
@@ -412,21 +432,35 @@ int main(int argc, char ** argv)
         fout << "\tCalculating the observed data..." << endl;
     }
 
-    begin = clock();
+    gettimeofday(&start, 0);
     CalTrueWF(*Pa, ip, plan, sgs_t, pt, mycomm);
-    duration = clock() - begin;
+    gettimeofday(&end, 0);
+
+    duration = end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000LL;
+
+    {
+        char *sc = new char(100);
+        sprintf(sc, "%d", rank);
+        string temp = sc;
+        string str = "./CalTrueWF/CalTrueWF_" + temp;
+
+        ofstream fstep(str.c_str());
+        fstep << static_cast<double>(duration) / static_cast<double>(1000000LL) << "s" << endl;
+        fstep.flush();
+        fstep.close();
+
+        delete sc;
+    }
+
 
     if(rank == ROOT_ID)
     {
-//        cout << "\tCalculating the observed data used:\t" << duration / CLOCKS_PER_SEC << "s" << endl;
-
-        fout << "\tCalculating the observed data used:\t" << duration / CLOCKS_PER_SEC << "s" << endl;
+        cout << "\tCalculating the observed data used:\t" << static_cast<double>(duration) / static_cast<double>(1000000LL) << "s" << endl;
+        fout << "\tCalculating the observed data used:\t" << static_cast<double>(duration) / static_cast<double>(1000000LL) << "s" << endl;
     }
 
 
     // 开始迭代
-    float e = 12.0f;
-
     for (uint It = 0; It < ip->IterN; It++)
     {
         if(rank == ROOT_ID)
@@ -439,17 +473,51 @@ int main(int argc, char ** argv)
             fout << "\tCalculating the Gradient..." << endl;
         }
 
-        begin = clock();
+        gettimeofday(&start, 0);
         CalGrad(*Pa, ip, plan, sgs_t, sgs_c, sgs_r, It, pt, mycomm);
+        gettimeofday(&end, 0);
+
+        duration = end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000LL;
+        {
+            char *sc = new char(100);
+            sprintf(sc, "%d", rank);
+            string temp = sc;
+            string str = "./CalGrad/CalGrad_" + temp;
+
+            ofstream fstep(str.c_str());
+            fstep << static_cast<double>(duration) / static_cast<double>(1000000LL) << "s" << endl;
+            fstep.flush();
+            fstep.close();
+
+            delete sc;
+        }
+
+
 
         // 梯度后处理
         PostProcessGrad(*Pa, ip->GradVp, plan->h_Vp, pt);
 
+        gettimeofday(&start, 0);
         // 求取步长
         CalStepLength(*Pa, ip, plan, sgs_t, sgs_c, e, pt, mycomm);
-        duration = clock() - begin;
+        gettimeofday(&end, 0);
 
-        MPI_Barrier(MPI_COMM_WORLD);
+        duration = end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000LL;
+        {
+            char *sc = new char(100);
+            sprintf(sc, "%d", rank);
+            string temp = sc;
+            string str = "./CalStepLength/CalStepLength_" + temp;
+
+            ofstream fstep(str.c_str());
+            fstep << static_cast<double>(duration) / static_cast<double>(1000000LL) << "s" << endl;
+            fstep.flush();
+            fstep.close();
+
+            delete sc;
+        }
+
+        //MPI_Barrier(MPI_COMM_WORLD);
         if(rank == ROOT_ID)
         {
             cout << "\tObjective function value:\t" << ip->ObjIter[It] << endl;
@@ -466,7 +534,7 @@ int main(int argc, char ** argv)
         PreProcess(*Pa, ip, plan, pt, mycomm);
     }
 
-    MPI_Barrier(MPI_COMM_WORLD);
+    //MPI_Barrier(MPI_COMM_WORLD);
     if(rank == ROOT_ID)
     {
 //        cout << "\tWriting data to .sgy" << endl;
@@ -474,9 +542,7 @@ int main(int argc, char ** argv)
         fout << "\tWriting data to .sgy" << endl;
     }
 
-    const char * const TrueSg = "TrueSG.sgy";
-    const char * const GradVp = "GradientVp.sgy";
-    const char * const InvertedVp = "InvertedVp.sgy";
+
 
     fopen(TrueSg, "wb");
     fopen(GradVp, "wb");
@@ -487,8 +553,36 @@ int main(int argc, char ** argv)
 //    WriteData(InvertedVp, nnz, nnx * nny, Pa->dz * 1000, ip->CurrVp, 0, pt, *Pa, WRITE_ALL);
 
 
+    gettimeofday(&total_end, 0);
+    duration = end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000LL;
+
+    {
+        char *sc = new char(100);
+        sprintf(sc, "%d", rank);
+        string temp = sc;
+        string str = "./Total_time/Total_time_" + temp;
+
+        ofstream ftotal(str.c_str());
+        ftotal << static_cast<double>(duration) / static_cast<double>(1000000LL) << "s" << endl;
+        ftotal.flush();
+        ftotal.close();
+
+        delete sc;
+    }
+
+    if(rank == ROOT_ID)
+    {
+        cout << "\tThe total time is: " << duration / CLOCKS_PER_SEC << "s" << endl;
+        fout << "\tThe total time is: " << static_cast<double>(duration) / static_cast<double>(1000000LL) << "s" << endl;
+    }
+    fout.flush();
+    fout.close();
+
+
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Finalize();
+
+
     return 0;
 
 }

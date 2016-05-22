@@ -22,7 +22,7 @@ void copydatatobuf(float *data, float *buf, const Partition& pt, uint transportl
 
     uint topborder = 0;
     uint leftborder = 0;
-    uint bottomborder = 0;
+    //uint bottomborder = 0;
     uint rightborder = 0;
 
     uint backborder = 0;
@@ -30,46 +30,46 @@ void copydatatobuf(float *data, float *buf, const Partition& pt, uint transportl
 
     uint length_x = block_x;
     uint length_y = block_y;
-    uint length_z = block_z;
+    //uint length_z = block_z;
 
     if(tag == STEP_U)
     {
         topborder = temph_U.topborder;
         leftborder = temph_U.leftborder;
-        bottomborder = temph_U.bottomborder;
+        //bottomborder = temph_U.bottomborder;
         rightborder = temph_U.rightborder;
         backborder = temph_U.backborder;
         frontborder = temph_U.frontborder;
 
         length_x = leftborder + block_x + rightborder;
         length_y = backborder + block_y + frontborder;
-        length_z = topborder + block_z + bottomborder;
+        //length_z = topborder + block_z + bottomborder;
     }
     else if(tag == STEP_V || tag == STEP_W || tag == STEP_K)
     {
         topborder = temph_VW.topborder;
         leftborder = temph_VW.leftborder;
-        bottomborder = temph_VW.bottomborder;
+        //bottomborder = temph_VW.bottomborder;
         rightborder = temph_VW.rightborder;
         backborder = temph_VW.backborder;;
         frontborder = temph_VW.frontborder;
 
         length_x = leftborder + block_x + rightborder;
         length_y = backborder + block_y + frontborder;
-        length_z = topborder + block_z + bottomborder;
+        //length_z = topborder + block_z + bottomborder;
     }
     else if(tag == STEP_VP)
     {
         topborder = temph_Vp.topborder;
         leftborder = temph_Vp.leftborder;
-        bottomborder = temph_Vp.bottomborder;
+        //bottomborder = temph_Vp.bottomborder;
         rightborder = temph_Vp.rightborder;
         backborder = temph_Vp.backborder;
         frontborder = temph_Vp.frontborder;
 
         length_x = leftborder + block_x + rightborder;
         length_y = backborder + block_y + frontborder;
-        length_z = topborder + block_z + bottomborder;
+        //length_z = topborder + block_z + bottomborder;
     }
     else
     {
@@ -164,17 +164,17 @@ void copydatatobuf_Vp(float *data, float *buf, const Partition& pt, uint transpo
 
     uint topborder = temph_Vp.topborder;
     uint leftborder = temph_Vp.leftborder;
-    uint bottomborder = temph_Vp.bottomborder;
-    uint rightborder = temph_Vp.rightborder;
+//    uint bottomborder = temph_Vp.bottomborder;
+//    uint rightborder = temph_Vp.rightborder;
     uint backborder = temph_Vp.backborder;
-    uint frontborder = temph_Vp.frontborder;
+//    uint frontborder = temph_Vp.frontborder;
 
     if(flag == RIGHT_TO_LEFT)
     {
         gap_x = Pa.PMLx - indexmin_x;
-        for(int i = 0; i < block_z; ++i)
+        for(uint i = 0; i < block_z; ++i)
         {
-            for(int j = 0; j < block_y; ++j)
+            for(uint j = 0; j < block_y; ++j)
             {
                 memcpy(buf + i * block_y * transportlen_side + j * transportlen_side, data + (i + topborder) * temph_Vp.length_y * temph_Vp.length_x + (j + backborder) * temph_Vp.length_x + leftborder + gap_x, sizeof(float) * transportlen_side);
             }
@@ -183,9 +183,9 @@ void copydatatobuf_Vp(float *data, float *buf, const Partition& pt, uint transpo
     if(flag == LEFT_TO_RIGHT)
     {
         gap_x = Pa.PMLx + Pa.Nx - 1 - indexmin_x;
-        for(int i = 0; i < block_z; ++i)
+        for(uint i = 0; i < block_z; ++i)
         {
-            for(int j = 0; j < block_y; ++j)
+            for(uint j = 0; j < block_y; ++j)
             {
                 memcpy(buf + i * block_y * transportlen_side + j * transportlen_side, data + (i + topborder) * temph_Vp.length_y * temph_Vp.length_x + (j + backborder) * temph_Vp.length_x + leftborder + gap_x, sizeof(float) * transportlen_side);
             }
@@ -194,9 +194,9 @@ void copydatatobuf_Vp(float *data, float *buf, const Partition& pt, uint transpo
     if(flag == TOP_TO_BOTTOM)
     {
         gap_z = Pa.PMLz + Pa.Nz - 1 - indexmin_z;
-        for(int i = 0; i < transportlen_side; ++i)
+        for(uint i = 0; i < transportlen_side; ++i)
         {
-            for(int j = 0; j < block_y; ++j)
+            for(uint j = 0; j < block_y; ++j)
             {
                 memcpy(buf + i * block_y * block_x + j * block_x, data + (topborder + i + gap_z) * temph_Vp.length_y * temph_Vp.length_x + (backborder + j) * temph_Vp.length_x + leftborder, sizeof(float) * block_x);
             }
@@ -205,9 +205,9 @@ void copydatatobuf_Vp(float *data, float *buf, const Partition& pt, uint transpo
     if(flag == BOTTOM_TO_TOP)
     {
         gap_z = Pa.PMLz - indexmin_z;
-        for(int i = 0; i < transportlen_side; ++i)
+        for(uint i = 0; i < transportlen_side; ++i)
         {
-            for(int j = 0; j < block_y; ++j)
+            for(uint j = 0; j < block_y; ++j)
             {
                 memcpy(buf + i * block_y * block_x + j * block_x, data + (topborder + i + gap_z) * temph_Vp.length_y * temph_Vp.length_x + (backborder + j) * temph_Vp.length_x + leftborder, sizeof(float) * block_x);
             }
@@ -216,9 +216,9 @@ void copydatatobuf_Vp(float *data, float *buf, const Partition& pt, uint transpo
     if(flag == FRONT_TO_BACK)
     {
         gap_y = Pa.PMLy - indexmin_y;
-        for(int i = 0; i < block_z; ++i)
+        for(uint i = 0; i < block_z; ++i)
         {
-            for(int j = 0; j < transportlen_side; ++j)
+            for(uint j = 0; j < transportlen_side; ++j)
             {
                 memcpy(buf + i * transportlen_side * block_x + j * block_x, data + (topborder + i) * temph_Vp.length_y * temph_Vp.length_x + (backborder + j + gap_y) * temph_Vp.length_x + leftborder, sizeof(float) * block_x);
             }
@@ -227,9 +227,9 @@ void copydatatobuf_Vp(float *data, float *buf, const Partition& pt, uint transpo
     if(flag == BACK_TO_FRONT)
     {
         gap_y = Pa.PMLy + Pa.Ny - 1 - indexmin_y;
-        for(int i = 0; i < block_z; ++i)
+        for(uint i = 0; i < block_z; ++i)
         {
-            for(int j = 0; j < transportlen_side; ++j)
+            for(uint j = 0; j < transportlen_side; ++j)
             {
                 memcpy(buf + i * transportlen_side * block_x + j * block_x, data + (topborder + i) * temph_Vp.length_y * temph_Vp.length_x + (backborder + j + gap_y) * temph_Vp.length_x + leftborder, sizeof(float) * block_x);
             }
@@ -251,54 +251,54 @@ void copybuftodata(float *buf, float *data, const Partition& pt, uint transportl
 
     uint topborder = 0;
     uint leftborder = 0;
-    uint bottomborder = 0;
+    //uint bottomborder = 0;
     uint rightborder = 0;
     uint frontborder= 0;
     uint backborder = 0;
 
     uint length_x = block_x;
     uint length_y = block_y;
-    uint length_z = block_z;
+    //uint length_z = block_z;
     //transportlen_side = 0;
 
     if(tag == STEP_U)
     {
         topborder = temph_U.topborder;
         leftborder = temph_U.leftborder;
-        bottomborder = temph_U.bottomborder;
+        //bottomborder = temph_U.bottomborder;
         rightborder = temph_U.rightborder;
         backborder = temph_U.backborder;
         frontborder = temph_U.frontborder;
 
         length_x = leftborder + block_x + rightborder;
         length_y = backborder + block_y + frontborder;
-        length_z = topborder + block_z + bottomborder;
+        //length_z = topborder + block_z + bottomborder;
     }
     else if(tag == STEP_V || tag == STEP_W || tag == STEP_K)
     {
         topborder = temph_VW.topborder;
         leftborder = temph_VW.leftborder;
-        bottomborder = temph_VW.bottomborder;
+        //bottomborder = temph_VW.bottomborder;
         rightborder = temph_VW.rightborder;
         backborder = temph_VW.backborder;;
         frontborder = temph_VW.frontborder;
 
         length_x = leftborder + block_x + rightborder;
         length_y = backborder + block_y + frontborder;
-        length_z = topborder + block_z + bottomborder;
+        //length_z = topborder + block_z + bottomborder;
     }
     else if(tag == STEP_VP)
     {
         topborder = temph_Vp.topborder;
         leftborder = temph_Vp.leftborder;
-        bottomborder = temph_Vp.bottomborder;
+        //bottomborder = temph_Vp.bottomborder;
         rightborder = temph_Vp.rightborder;
         backborder = temph_Vp.backborder;
         frontborder = temph_Vp.frontborder;
 
         length_x = leftborder + block_x + rightborder;
         length_y = backborder + block_y + frontborder;
-        length_z = topborder + block_z + bottomborder;
+        //length_z = topborder + block_z + bottomborder;
     }
     else
     {
@@ -389,9 +389,9 @@ void dataGather(float *data, const Partition& pt, int tag, const MPI_Comm& mycom
     uint transportlen_side = 0;
     uint length = 0;
 
-    uint length_x = block_x;
-    uint length_y = block_y;
-    uint length_z = block_z;
+//    uint length_x = block_x;
+//    uint length_y = block_y;
+//    uint length_z = block_z;
 
     if(tag == STEP_U)
     {
@@ -402,9 +402,9 @@ void dataGather(float *data, const Partition& pt, int tag, const MPI_Comm& mycom
         backborder = temph_U.backborder;
         frontborder = temph_U.frontborder;
 
-        length_x = leftborder + block_x + rightborder;
-        length_y = backborder + block_y + frontborder;
-        length_z = topborder + block_z + bottomborder;
+//        length_x = leftborder + block_x + rightborder;
+//        length_y = backborder + block_y + frontborder;
+//        length_z = topborder + block_z + bottomborder;
     }
     else if(tag == STEP_V || tag == STEP_W || tag == STEP_K)
     {
@@ -415,9 +415,9 @@ void dataGather(float *data, const Partition& pt, int tag, const MPI_Comm& mycom
         backborder = temph_VW.backborder;;
         frontborder = temph_VW.frontborder;
 
-        length_x = leftborder + block_x + rightborder;
-        length_y = backborder + block_y + frontborder;
-        length_z = topborder + block_z + bottomborder;
+//        length_x = leftborder + block_x + rightborder;
+//        length_y = backborder + block_y + frontborder;
+//        length_z = topborder + block_z + bottomborder;
     }
     else if(tag == STEP_VP)
     {
@@ -428,9 +428,9 @@ void dataGather(float *data, const Partition& pt, int tag, const MPI_Comm& mycom
         backborder = temph_Vp.backborder;
         frontborder = temph_Vp.frontborder;
 
-        length_x = leftborder + block_x + rightborder;
-        length_y = backborder + block_y + frontborder;
-        length_z = topborder + block_z + bottomborder;
+//        length_x = leftborder + block_x + rightborder;
+//        length_y = backborder + block_y + frontborder;
+//        length_z = topborder + block_z + bottomborder;
     }
     else
     {
@@ -438,7 +438,7 @@ void dataGather(float *data, const Partition& pt, int tag, const MPI_Comm& mycom
     }
 
     MPI_Status status;
-    MPI_Request request;
+    //MPI_Request request;
 
 
     if(topborder && !pt.in_isfirstblock_z())
@@ -533,7 +533,7 @@ void dataTransport(float *data, const Partition& pt, int tag, int it, const MPI_
 //    MPI_Barrier(MPI_COMM_WORLD);
 //    cout << pt.getrank() << " " << pos_y << endl;
 
-    int rank = pt.getrank();
+    //int rank = pt.getrank();
     int in_rank = pt.get_in_rank();
 
     uint block_x = pt.getblockLength_x();
@@ -542,7 +542,7 @@ void dataTransport(float *data, const Partition& pt, int tag, int it, const MPI_
 
     uint sumBlock_x = pt.get_in_sumBlock_x();
     uint sumBlock_y = pt.get_in_sumBlock_y();
-    uint sumBlock_z = pt.get_in_sumBlock_z();
+    //uint sumBlock_z = pt.get_in_sumBlock_z();
 
     uint topborder = 0;
     uint leftborder = 0;
@@ -983,7 +983,7 @@ void dataTransport(float *data, const Partition& pt, int tag, int it, const MPI_
 
 void dataTransport_Vp(float *data, const Partition& pt, int tag, const AFDP3D &Pa, const MPI_Comm& mycomm)
 {
-    uint rank = pt.getrank();
+    //uint rank = pt.getrank();
     uint in_rank = pt.get_in_rank();
 
     uint blockPosition_x = pt.get_in_blockPosition_x();

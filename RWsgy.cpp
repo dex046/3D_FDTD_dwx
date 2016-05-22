@@ -2,10 +2,7 @@
  * author:dwx
  * 2015.11.7
  ******************************************/
-
-#include "mpi.h"
 #include "RWsgy.h"
-#include "Partition.h"
 
 
 using namespace std;
@@ -104,7 +101,7 @@ float IBMF4Swap(float x)
 }
 
 /* 读取Sgy文件的相关信息*/
-bool InfoOfSgy(char FileName[], REEL reel, unsigned short *TraceNum, unsigned short *SampleNum,
+bool InfoOfSgy(const char *FileName, REEL reel, unsigned short *TraceNum, unsigned short *SampleNum,
                unsigned short *SampleInt, short *DFormat, bool *BReel, bool *BIBM)
 {
     FILE *fdata;
@@ -220,7 +217,7 @@ bool InfoOfSgy(char FileName[], REEL reel, unsigned short *TraceNum, unsigned sh
 }
 
 /* 读取Sgy中的地震道数据 */
-bool ReadSgyData(char FileName[], Trace *trace, REEL reel,
+bool ReadSgyData(const char *FileName, Trace *trace, REEL reel,
                  unsigned short *SampleNum, short *DFormat,
                  bool *BReel, bool *BIBM, const Partition &pt)
 {
@@ -235,7 +232,7 @@ bool ReadSgyData(char FileName[], Trace *trace, REEL reel,
     int length_z = pt.getblockLength_z();
 
     uint totallength_x = pt.gettotallength_x();
-    uint totallength_y = pt.gettotallength_y();
+    //uint totallength_y = pt.gettotallength_y();
     uint totallength_z = pt.gettotallength_z();
 
     // 根据文件中数据的存储形式来开辟空间
@@ -263,7 +260,7 @@ bool ReadSgyData(char FileName[], Trace *trace, REEL reel,
     MPI_File fdata;
     MPI_File_open(MPI_COMM_WORLD, FileName, MPI_MODE_RDONLY, MPI_INFO_NULL, &fdata);
 
-    MPI_Offset offset = 0, filesize = 0;
+    MPI_Offset offset = 0;
     MPI_Status status;
 
     // 如果有卷头
@@ -457,15 +454,15 @@ bool WriteSgy(const char * const FileName, unsigned char *f3200, Trace *trace, u
     int rank = pt.getrank();
 
     int indexmin_x = 0;
-    int indexmin_y = 0;
+    //int indexmin_y = 0;
     int indexmin_z = 0;
 
     int nnz = 0;
-    int nny = 0;
-    int nnx = 0;
+//    int nny = 0;
+//    int nnx = 0;
 
     int block_x = 0;
-    int block_y = 0;
+    //int block_y = 0;
     int block_z = 0;
 
     MPI_File_set_size(fh, filesize);
@@ -473,15 +470,15 @@ bool WriteSgy(const char * const FileName, unsigned char *f3200, Trace *trace, u
     if(tag == WRITE_INTER)
     {
         indexmin_x = pt.getinteriormin_x();
-        indexmin_y = pt.getinteriormin_y();
+        //indexmin_y = pt.getinteriormin_y();
         indexmin_z = pt.getinteriormin_z();
 
         nnz = Pa.Nz;
-        nnx = Pa.Nx;
-        nny = Pa.Ny;
+//        nnx = Pa.Nx;
+//        nny = Pa.Ny;
 
         block_x = pt.getinteriorLength_x();
-        block_y = pt.getinteriorLength_y();
+        //block_y = pt.getinteriorLength_y();
         block_z = pt.getinteriorLength_z();
 
 //        if(!block_x || !block_z)
@@ -490,15 +487,15 @@ bool WriteSgy(const char * const FileName, unsigned char *f3200, Trace *trace, u
     else if(tag == WRITE_ALL)
     {
         indexmin_x = pt.getindexmin_x();
-        indexmin_y = pt.getindexmin_y();
+        //indexmin_y = pt.getindexmin_y();
         indexmin_z = pt.getindexmin_z();
 
         nnz = pt.gettotallength_z();
-        nny = pt.gettotallength_y();
-        nnx = pt.gettotallength_x();
+//        nny = pt.gettotallength_y();
+//        nnx = pt.gettotallength_x();
 
         block_x = pt.getblockLength_x();
-        block_y = pt.getblockLength_y();
+        //block_y = pt.getblockLength_y();
         block_z = pt.getblockLength_z();
     }
     else

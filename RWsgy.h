@@ -14,12 +14,8 @@
 #ifndef __RWSGY_H__
 #define __RWSGY_H__
 
-#include "mpi.h"
-
-#include <iostream>
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
+#pragma once
+#include "common.h"
 #include "Partition.h"
 
 #define     ROOT_ID     0
@@ -462,11 +458,11 @@ float IBMF4Swap(float x);
 
 
 /* 读取Sgy文件的相关信息*/
-bool InfoOfSgy(char FileName[], REEL reel, unsigned short *TraceNum, unsigned short *SampleNum,
+bool InfoOfSgy(const char *FileName, REEL reel, unsigned short *TraceNum, unsigned short *SampleNum,
                unsigned short *SampleInt, short *DFormat, bool *BReel, bool *BIBM);
 
 /* 读Sgy中的数据*/
-bool ReadSgyData(char FileName[], Trace *trace, REEL reel,
+bool ReadSgyData(const char *FileName, Trace *trace, REEL reel,
                  unsigned short *SampleNum, short *DFormat,
                  bool *BReel, bool *BIBM, const Partition &pt);
 

@@ -3,8 +3,10 @@
  * 2015.11.7
  ******************************************/
 #include "Partition.h"
-#include <iostream>
+
 using namespace std;
+
+
 Partition::Partition()
 {
 }
@@ -51,9 +53,9 @@ Partition::Partition(const AFDP3D *Pa, const IP *ip, uint totallength_x, uint to
     uint remainder_y = totallength_y % this->in_sumBlock_y;//
     uint remainder_z = totallength_z % this->in_sumBlock_z;//
 
-    uint in_remainder_x = totallength_x % this->in_sumBlock_x;
-    uint in_remainder_y = totallength_y % this->in_sumBlock_y;
-    uint in_remainder_z = totallength_z % this->in_sumBlock_z;
+//    uint in_remainder_x = totallength_x % this->in_sumBlock_x;
+//    uint in_remainder_y = totallength_y % this->in_sumBlock_y;
+//    uint in_remainder_z = totallength_z % this->in_sumBlock_z;
 
     this->indexmin_x = in_blockPosition_x * blockLength_x + (in_blockPosition_x <= remainder_x ? in_blockPosition_x : remainder_x);
     this->indexmax_x = this->indexmin_x + this->blockLength_x - 1 + (in_blockPosition_x < remainder_x ? 1 : 0);
@@ -382,9 +384,9 @@ void Partition::setRL(const IP *ip, const AFDP3D *Pa)
 //    {
         for (uint m = 0; m < ip->St[0].rn; m++)
         {
-            int temp_x = Pa->PMLx + m;
-            int temp_y = Pa->PMLy + (uint)(Pa->Ny / 2);
-            int temp_z = Pa->PMLz + 2;
+            uint temp_x = Pa->PMLx + m;
+            uint temp_y = Pa->PMLy + (uint)(Pa->Ny / 2);
+            uint temp_z = Pa->PMLz + 2;
             if(temp_x >= this->indexmin_x && temp_x <= this->indexmax_x && temp_y >= this->indexmin_y && temp_y <= this->indexmax_y && temp_z >= this->indexmin_z && temp_z <= this->indexmax_z)
             {
                 this->RL_beginnum = this->RL_beginnum < m ? this->RL_beginnum : m;
@@ -790,7 +792,7 @@ void Partition::setInside(AFDP3D Pa)
                                 ins[1].indexmax_x = this->indexmax_x;
                                 ins[1].indexmax_z = Pa.PMLz - 1;
 
-                                for(int i = 0; i < this->inside_num; ++i)
+                                for(uint i = 0; i < this->inside_num; ++i)
                                 {
                                     ins[i].length_x = ins[i].getindexmax_x() - ins[i].getindexmin_x() + 1;
                                     ins[i].length_y = ins[i].getindexmax_y() - ins[i].getindexmin_y() + 1;

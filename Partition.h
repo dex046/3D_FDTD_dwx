@@ -4,15 +4,10 @@
  ******************************************/
 #ifndef PARTITION_H
 #define PARTITION_H
-//#include "testTDFWI.h"
-#include <vector>
-#include <fstream>
-#include <limits.h>
-#include <stddef.h>
+
+#pragma once
+#include "common.h"
 using namespace std;
-
-
-
 
 #define		usht			unsigned short
 #define		PI				3.141592653589793f
@@ -81,7 +76,15 @@ struct AFDP3D			// acoustic forward modeling parameters in 3D
     uint PMLx;			// x方向PML边界的网格数
     uint PMLy;			// y方向PML边界的网格数
     uint PMLz;			// z方向PML边界的网格数
+
+    AFDP3D(){}
+//    AFDP3D(uint, uint, uint, uint, float, float, float, float, float, uint, uint, uint);
 };
+//inline AFDP3D::AFDP3D(uint Nx, uint Ny, uint Nz, uint Nt, float dx, float dy, float dz, float dt, float f0, uint PMLx, uint PMLy, uint PMLz)
+//    : Nx(Nx), Ny(Ny), Nz(Nz), Nt(Nt), dx(dx), dy(dy), dz(dz), dt(dt), f0(f0), PMLx(PMLx), PMLy(PMLy), PMLz(PMLz)
+//{
+
+//}
 
 // 反演中要使用的参数
 struct IP{

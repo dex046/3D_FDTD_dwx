@@ -25,7 +25,9 @@ HEADERS += \
     DataTran.h \
     Partition.h \
     RWsgy.h \
-    testHFWI3D.h
+    testHFWI3D.h \
+    common.h \
+    const_value.h
 
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../lib64/mpich/lib/release/ -lfmpich
