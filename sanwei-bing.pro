@@ -4,13 +4,13 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += main.cpp \
-    DataTran.cpp \
-    H_Border.cpp \
-    h_Coord.cpp \
-    Inside.cpp \
-    Partition.cpp \
-    RWsgy.cpp \
-    testHFWI3D.cpp
+    ./util/DataTran.cpp \
+    ./util/H_Border.cpp \
+    ./util/h_Coord.cpp \
+    ./util/Inside.cpp \
+    ./util/Partition.cpp \
+    ./util/RWsgy.cpp \
+    ./util/testHFWI3D.cpp
 
 include(deployment.pri)
 qtcAddDeployment()
@@ -18,16 +18,19 @@ qtcAddDeployment()
 INCLUDEPATH += /usr/include/mpich-x86_64/
 DEPENDPATH  += /usr/include/mpich-x86_64/
 
+INCLUDEPATH += ./include/
+DEPENDPATH  += ./include/
+
 INCLUDEPATH += /usr/local/fftw-3.3.4/include/
 DEPENDPATH  += /usr/local/fftw-3.3.4/include/
 
 HEADERS += \
-    DataTran.h \
-    Partition.h \
-    RWsgy.h \
-    testHFWI3D.h \
-    common.h \
-    const_value.h
+    ./include/DataTran.h \
+    ./include/Partition.h \
+    ./include/RWsgy.h \
+    ./include/testHFWI3D.h \
+    ./include/common.h \
+    ./include/const_value.h
 
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../lib64/mpich/lib/release/ -lfmpich

@@ -158,6 +158,7 @@ void ReadData(const char* FileName,
     {
         delete []trace[n].data;
     }
+
     delete []trace;
     delete []Reel;
     delete []DFormat;
@@ -2420,13 +2421,13 @@ void CalTrueWF(AFDP3D Pa,
                 Pa.Nt * RL_num * sizeof(float));
         }
 
-        char *sc = new char(100);
+        char *sc = new char[100];
         sprintf(sc, "%d", rank);
         string temp = sc;
-        string str = "./CalTrueWF_comu_/CalTrueWF_comu_" + temp;
+        string str = "./result/CalTrueWF_comu_/CalTrueWF_comu_" + temp;
 
         ofstream fout(str.c_str());
-        fout << static_cast<double>(commute_time) / static_cast<double>(1000000LL) << "s" << endl;
+        fout << static_cast<double>(commute_time) / static_cast<double>(1000) << "ms" << endl;
         fout.flush();
         fout.close();
 
@@ -3328,13 +3329,13 @@ void CalGrad(AFDP3D Pa,
 //        }
 //    }
 
-    char *sc = new char(100);
+    char *sc = new char[100];
     sprintf(sc, "%d", rank);
     string temp = sc;
-    string str = "./CalGrad_comu_/CalGrad_comu_" + temp;
+    string str = "./result/CalGrad_comu_/CalGrad_comu_" + temp;
 
     ofstream fout(str.c_str());
-    fout << static_cast<double>(commute_time) / static_cast<double>(1000000LL) << "s" << endl;
+    fout << static_cast<double>(commute_time) / static_cast<double>(1000) << "ms" << endl;
     fout.flush();
     fout.close();
 
@@ -3858,13 +3859,13 @@ void CalStepLength(AFDP3D Pa,
 
     //ip->Alpha = *plan->h_SumFenzi / *plan->h_SumFenmu;
 
-    char *sc = new char(100);
+    char *sc = new char[100];
     sprintf(sc, "%d", rank);
     string temp = sc;
-    string str = "./CalStepLength_comu_/CalStepLength_comu_" + temp;
+    string str = "./result/CalStepLength_comu_/CalStepLength_comu_" + temp;
 
     ofstream fout(str.c_str());
-    fout << static_cast<double>(commute_time) / static_cast<double>(1000000LL) << "s" << endl;
+    fout << static_cast<double>(commute_time) / static_cast<double>(1000) << "ms" << endl;
     fout.flush();
     fout.close();
 
@@ -3986,13 +3987,13 @@ void PreProcess(AFDP3D Pa,
 
     ip->Alpha = 0.0f;
 
-    char *sc = new char(100);
+    char *sc = new char[100];
     sprintf(sc, "%d", rank);
     string temp = sc;
-    string str = "./PreProcess_comu_/PreProcess_comu_" + temp;
+    string str = "./result/PreProcess_comu_/PreProcess_comu_" + temp;
 
     ofstream fout(str.c_str());
-    fout << static_cast<double>(commute_time) / static_cast<double>(1000000LL) << "s" << endl;
+    fout << static_cast<double>(commute_time) / static_cast<double>(1000) << "ms" << endl;
     fout.flush();
     fout.close();
 

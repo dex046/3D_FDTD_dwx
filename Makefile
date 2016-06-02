@@ -1,40 +1,40 @@
-sanwei-bing: H_Border.o h_Coord.o Inside.o Partition.o RWsgy.o DataTran.o testHFWI3D.o main.o
-	mpicxx -o sanwei-bing H_Border.o h_Coord.o Inside.o Partition.o  RWsgy.o DataTran.o testHFWI3D.o main.o -lfftw3 -Wall
+./3D_FDTD_DWX: ./build/H_Border.o ./build/h_Coord.o ./build/Inside.o ./build/Partition.o ./build/RWsgy.o ./build/DataTran.o ./build/testHFWI3D.o ./build/main.o
+	mpicxx -o 3D_FDTD_DWX ./build/H_Border.o ./build/h_Coord.o ./build/Inside.o ./build/Partition.o  ./build/RWsgy.o ./build/DataTran.o ./build/testHFWI3D.o ./build/main.o -lfftw3 -Wall
 
-H_Border.o: Partition.h H_Border.cpp
-	mpicxx -c H_Border.cpp -lfftw3 -Wall
+./build/H_Border.o: ./include/Partition.h ./util/H_Border.cpp
+	mpicxx -c -I ./include ./util/H_Border.cpp -o $@ -lfftw3 -Wall -g
 
-h_Coord.o: Partition.h h_Coord.cpp
-	mpicxx -c h_Coord.cpp -lfftw3 -Wall
+./build/h_Coord.o: ./include/Partition.h ./util/h_Coord.cpp
+	mpicxx -c -I ./include  ./util/h_Coord.cpp -o $@ -lfftw3 -Wall -g
 
-Inside.o: Partition.h Inside.cpp
-	mpicxx -c Inside.cpp -lfftw3 -Wall
+./build/Inside.o: ./include/Partition.h ./util/Inside.cpp
+	mpicxx -c -I ./include  ./util/Inside.cpp -o $@ -lfftw3 -Wall -g
 
-Partition.o: Partition.cpp Partition.h H_Border.cpp h_Coord.cpp Inside.cpp
-	mpicxx -c Partition.cpp -lfftw3 -Wall
+./build/Partition.o: ./util/Partition.cpp ./include/Partition.h ./util/H_Border.cpp ./util/h_Coord.cpp ./util/Inside.cpp
+	mpicxx -c -I ./include ./util/Partition.cpp -o $@ -lfftw3 -Wall -g
 
-RWsgy.o: RWsgy.cpp RWsgy.h Partition.h
-	mpicxx -c RWsgy.cpp -lfftw3 -Wall
+./build/RWsgy.o: ./util/RWsgy.cpp ./include/RWsgy.h ./include/Partition.h
+	mpicxx -c -I ./include ./util/RWsgy.cpp -o $@ -lfftw3 -Wall -g
 
-DataTran.o: DataTran.cpp DataTran.h Partition.h 
-	mpicxx -c DataTran.cpp -lfftw3 -Wall
+./build/DataTran.o: ./util/DataTran.cpp ./include/DataTran.h ./include/Partition.h 
+	mpicxx -c -I ./include ./util/DataTran.cpp -o $@ -lfftw3 -Wall -g
 
-testHFWI3D.o: testHFWI3D.cpp testHFWI3D.h Partition.h
-	mpicxx -c testHFWI3D.cpp -lfftw3 -Wall
+./build/testHFWI3D.o: ./util/testHFWI3D.cpp ./include/testHFWI3D.h ./include/Partition.h
+	mpicxx -c -I ./include ./util/testHFWI3D.cpp -o $@ -lfftw3 -Wall -g
 
-main.o: main.cpp 
-	mpicxx -c main.cpp -lfftw3 -Wall
+./build/main.o: main.cpp ./include/testHFWI3D.h
+	mpicxx -c -I ./include main.cpp -o $@ -lfftw3 -Wall -g
 
 clean:
-	rm -rf *.o
-	rm -rf sanwei-bing
+	rm -rf ./build/*.o
+	rm -rf 3D_FDTD_DWX
 	ls *.txt | grep -v information.txt | xargs rm -rf 
-	rm -rf ./CalGrad/*
-	rm -rf ./CalGrad_comu_/*
-	rm -rf ./CalStepLength/*
-	rm -rf ./CalStepLength_comu_/*
-	rm -rf ./CalTrueWF/*
-	rm -rf ./CalTrueWF_comu_/*
-	rm -rf ./PreProcess_comu_/*
-	rm -rf ./read_time/*
-	rm -rf ./Total_time/*
+	rm -rf ./result/CalGrad/*
+	rm -rf ./result/CalGrad_comu_/*
+	rm -rf ./result/CalStepLength/*
+	rm -rf ./result/CalStepLength_comu_/*
+	rm -rf ./result/CalTrueWF/*
+	rm -rf ./result/CalTrueWF_comu_/*
+	rm -rf ./result/PreProcess_comu_/*
+	rm -rf ./result/read_time/*
+	rm -rf ./result/Total_time/*

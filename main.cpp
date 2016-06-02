@@ -39,6 +39,14 @@ int main(int argc, char ** argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &p_size);
 
+    if(rank == 0)
+    {
+
+    }
+    else if(rank == 1)
+    {
+
+    }
 
     // 有限差分参数
     AFDP3D *Pa;
@@ -174,18 +182,23 @@ int main(int argc, char ** argv)
 
     ReadData(TrueVp, ip->TrueVp, pt, 0);
     ReadData(InitVp, ip->CurrVp, pt, 0);
-cout << 13 << endl;
+
+    MPI_Barrier(MPI_COMM_WORLD);
+//cout << rank << endl;
+
     gettimeofday(&end, 0);
     duration = (end.tv_usec - start.tv_usec) + (end.tv_sec - start.tv_sec) * 1000000LL;
 
     {
-        char *sc = new char(100);
+        char *sc = new char[100];
         sprintf(sc, "%d", rank);
+
+
         string temp = sc;
-        string str = "./read_time/read_time" + temp;
+        string str = "./result/read_time/read_time" + temp;
 
         ofstream fread_time(str.c_str());
-        fread_time << static_cast<double>(duration) / static_cast<double>(1000) << endl;
+        fread_time << static_cast<double>(duration) / static_cast<double>(1000) << "ms" << endl;
 
         delete sc;
     }
@@ -439,13 +452,13 @@ cout << 13 << endl;
     duration = end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000LL;
 
     {
-        char *sc = new char(100);
+        char *sc = new char[100];
         sprintf(sc, "%d", rank);
         string temp = sc;
-        string str = "./CalTrueWF/CalTrueWF_" + temp;
+        string str = "./result/CalTrueWF/CalTrueWF_" + temp;
 
         ofstream fstep(str.c_str());
-        fstep << static_cast<double>(duration) / static_cast<double>(1000000LL) << "s" << endl;
+        fstep << static_cast<double>(duration) / static_cast<double>(1000) << "ms" << endl;
         fstep.flush();
         fstep.close();
 
@@ -455,8 +468,8 @@ cout << 13 << endl;
 
     if(rank == ROOT_ID)
     {
-        cout << "\tCalculating the observed data used:\t" << static_cast<double>(duration) / static_cast<double>(1000000LL) << "s" << endl;
-        fout << "\tCalculating the observed data used:\t" << static_cast<double>(duration) / static_cast<double>(1000000LL) << "s" << endl;
+        cout << "\tCalculating the observed data used:\t" << static_cast<double>(duration) / static_cast<double>(1000) << "ms" << endl;
+        fout << "\tCalculating the observed data used:\t" << static_cast<double>(duration) / static_cast<double>(1000) << "ms" << endl;
     }
 
 
@@ -479,13 +492,13 @@ cout << 13 << endl;
 
         duration = end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000LL;
         {
-            char *sc = new char(100);
+            char *sc = new char[100];
             sprintf(sc, "%d", rank);
             string temp = sc;
-            string str = "./CalGrad/CalGrad_" + temp;
+            string str = "./result/CalGrad/CalGrad_" + temp;
 
             ofstream fstep(str.c_str());
-            fstep << static_cast<double>(duration) / static_cast<double>(1000000LL) << "s" << endl;
+            fstep << static_cast<double>(duration) / static_cast<double>(1000) << "ms" << endl;
             fstep.flush();
             fstep.close();
 
@@ -504,13 +517,13 @@ cout << 13 << endl;
 
         duration = end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000LL;
         {
-            char *sc = new char(100);
+            char *sc = new char[100];
             sprintf(sc, "%d", rank);
             string temp = sc;
-            string str = "./CalStepLength/CalStepLength_" + temp;
+            string str = "./result/CalStepLength/CalStepLength_" + temp;
 
             ofstream fstep(str.c_str());
-            fstep << static_cast<double>(duration) / static_cast<double>(1000000LL) << "s" << endl;
+            fstep << static_cast<double>(duration) / static_cast<double>(1000) << "ms" << endl;
             fstep.flush();
             fstep.close();
 
@@ -554,16 +567,16 @@ cout << 13 << endl;
 
 
     gettimeofday(&total_end, 0);
-    duration = end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000LL;
+    duration = total_end.tv_usec - total_begin.tv_usec + (total_end.tv_sec - total_begin.tv_sec) * 1000000LL;
 
     {
-        char *sc = new char(100);
+        char *sc = new char[100];
         sprintf(sc, "%d", rank);
         string temp = sc;
-        string str = "./Total_time/Total_time_" + temp;
+        string str = "./result/Total_time/Total_time_" + temp;
 
         ofstream ftotal(str.c_str());
-        ftotal << static_cast<double>(duration) / static_cast<double>(1000000LL) << "s" << endl;
+        ftotal << static_cast<double>(duration) / static_cast<double>(1000) << "ms" << endl;
         ftotal.flush();
         ftotal.close();
 
@@ -572,8 +585,8 @@ cout << 13 << endl;
 
     if(rank == ROOT_ID)
     {
-        cout << "\tThe total time is: " << duration / CLOCKS_PER_SEC << "s" << endl;
-        fout << "\tThe total time is: " << static_cast<double>(duration) / static_cast<double>(1000000LL) << "s" << endl;
+        cout << "\tThe total time is: " << static_cast<double>(duration) / static_cast<double>(1000) << "ms" << endl;
+        fout << "\tThe total time is: " << static_cast<double>(duration) / static_cast<double>(1000) << "ms" << endl;
     }
     fout.flush();
     fout.close();
