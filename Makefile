@@ -1,40 +1,79 @@
-./3D_FDTD_DWX: ./build/H_Border.o ./build/h_Coord.o ./build/Inside.o ./build/Partition.o ./build/RWsgy.o ./build/DataTran.o ./build/testHFWI3D.o ./build/main.o
-	mpicxx -o 3D_FDTD_DWX ./build/H_Border.o ./build/h_Coord.o ./build/Inside.o ./build/Partition.o  ./build/RWsgy.o ./build/DataTran.o ./build/testHFWI3D.o ./build/main.o -lfftw3 -Wall
+CC=mpicxx
+C_FLAGS=-Wall -lfftw3 -g -I $(shell pwd)/include/###shell执行shell调用,shell脚本用bash
+export CC
+export C_FLAGS
 
-./build/H_Border.o: ./include/Partition.h ./util/H_Border.cpp
-	mpicxx -c -I ./include ./util/H_Border.cpp -o $@ -lfftw3 -Wall -g
+CURRENT_DIR=.
+UTIL_DIR=util
+INCLUDE_DIR=include
+BUILD_DIR=build
+RESULT_DIR=result
 
-./build/h_Coord.o: ./include/Partition.h ./util/h_Coord.cpp
-	mpicxx -c -I ./include  ./util/h_Coord.cpp -o $@ -lfftw3 -Wall -g
+RESULT=3D_FDTD_DWX
 
-./build/Inside.o: ./include/Partition.h ./util/Inside.cpp
-	mpicxx -c -I ./include  ./util/Inside.cpp -o $@ -lfftw3 -Wall -g
+SRC:=$(wildcard ${UTIL_DIR}/*.cpp)
+SRC+=$(wildcard ${CURRENT_DIR}/*.cpp)
 
-./build/Partition.o: ./util/Partition.cpp ./include/Partition.h ./util/H_Border.cpp ./util/h_Coord.cpp ./util/Inside.cpp
-	mpicxx -c -I ./include ./util/Partition.cpp -o $@ -lfftw3 -Wall -g
+OBJ=$(SRC:.cpp=.o)
+OBJ:=$(notdir $(OBJ))
+OBJ:=$(addprefix ${BUILD_DIR}/, ${OBJ})
 
-./build/RWsgy.o: ./util/RWsgy.cpp ./include/RWsgy.h ./include/Partition.h
-	mpicxx -c -I ./include ./util/RWsgy.cpp -o $@ -lfftw3 -Wall -g
+HEADERS=$(wildcard $(INCLUDE_DIR)/*.h)
 
-./build/DataTran.o: ./util/DataTran.cpp ./include/DataTran.h ./include/Partition.h 
-	mpicxx -c -I ./include ./util/DataTran.cpp -o $@ -lfftw3 -Wall -g
+#vpath %.h ${currentdir}/include/
+#vpath %.cpp ${currentdir}/util/
 
-./build/testHFWI3D.o: ./util/testHFWI3D.cpp ./include/testHFWI3D.h ./include/Partition.h
-	mpicxx -c -I ./include ./util/testHFWI3D.cpp -o $@ -lfftw3 -Wall -g
+B=$(A)
+A=later
+all: dir $(RESULT)
 
-./build/main.o: main.cpp ./include/testHFWI3D.h
-	mpicxx -c -I ./include main.cpp -o $@ -lfftw3 -Wall -g
+dir:
+	@if [ ! -d $(BUILD_DIR) ]; then\
+		mkdir $(BUILD_DIR);\
+	fi
+	@if [ ! -d ${RESULT_DIR} ]; then\
+		mkdir ${RESULT_DIR};\
+	fi
 
+$(RESULT): makeutil $(BUILD_DIR)/main.o
+	$(CC) $(C_FLAGS) $(OBJ) -o $(RESULT)
+
+#excute Makefile in the util dir
+makeutil: $(UTIL_DIR)/Makefile
+	$(MAKE) -C $(UTIL_DIR)
+
+$(BUILD_DIR)/main.o: $(CURRENT_DIR)/main.cpp
+	$(CC) ${C_FLAGS} -c $< -o $@
+
+#create or recreate the Makefile while new files added into the util dir
+$(UTIL_DIR)/Makefile: $(UTIL_DIR)
+	bash createmake.sh $(UTIL_DIR);
+
+.PHONY:clean
 clean:
-	rm -rf ./build/*.o
-	rm -rf 3D_FDTD_DWX
+	-rm -r ./build/*.o
+	-rm -r 3D_FDTD_DWX
+	-rm ls *.txt | grep -v information.txt | xargs rm -rf 
+	-rm -r ./result/CalGrad/*
+	-rm -r ./result/CalGrad_comu_/*
+	-rm -r ./result/CalStepLength/*
+	-rm -r ./result/CalStepLength_comu_/*
+	-rm -r ./result/CalTrueWF/*
+	-rm -r ./result/CalTrueWF_comu_/*
+	-rm -r ./result/PreProcess_comu_/*
+	-rm -r ./result/read_time/*
+	-rm -r ./result/Total_time/*
+veryclean:
+	-rm -rf ./build/*.o
+	-rm -rf 3D_FDTD_DWX
+	-rm -rf ./util/Makefile
 	ls *.txt | grep -v information.txt | xargs rm -rf 
-	rm -rf ./result/CalGrad/*
-	rm -rf ./result/CalGrad_comu_/*
-	rm -rf ./result/CalStepLength/*
-	rm -rf ./result/CalStepLength_comu_/*
-	rm -rf ./result/CalTrueWF/*
-	rm -rf ./result/CalTrueWF_comu_/*
-	rm -rf ./result/PreProcess_comu_/*
-	rm -rf ./result/read_time/*
-	rm -rf ./result/Total_time/*
+	-rm -rf ./result/CalGrad/*
+	-rm -rf ./result/CalGrad_comu_/*
+	-rm -rf ./result/CalStepLength/*
+	-rm -rf ./result/CalStepLength_comu_/*
+	-rm -rf ./result/CalTrueWF/*
+	-rm -rf./result/CalTrueWF_comu_/*
+	-rm -rf ./result/PreProcess_comu_/*
+	-rm -rf ./result/read_time/*
+	-rm -rf ./result/Total_time/*
