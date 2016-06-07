@@ -1,6 +1,5 @@
 /******************************************
  * author:dwx
- * 2015.11.7
  ******************************************/
 #include "Partition.h"
 uint Inside::getindexmin_x() const
